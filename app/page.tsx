@@ -90,19 +90,23 @@ export default function Home() {
 
   if (!user) return <div className="container mx-auto p-4">Loading...</div>
 
-  return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Welcome, {user.firstName}!</h1>
-      <p>Your current points: {user.points}</p>
-      
-      <div
-        className={`py-2 px-4 rounded mt-4 ${
-          buttonStage === 'check'
-            ? 'bg-green-500 hover:bg-green-700'
-            : buttonStage === 'claim'
-            ? 'bg-orange-500 hover:bg-orange-700'
-            : 'bg-lightblue' // Ensure this color is defined in your CSS
-        }`}
+ return (
+  <div className="container mx-auto p-4">
+    <h1 className="text-2xl font-bold mb-4 text-center">Welcome, {user.firstName}!</h1>
+    
+    {/* Centered points display */}
+    <div className="text-center mb-4">
+      <p className="text-lg">Your current points: {user.points}</p>
+    </div>
+    
+    <div
+      className={`py-2 px-4 rounded mt-4 ${
+        buttonStage === 'check'
+          ? 'bg-green-500 hover:bg-green-700'
+          : buttonStage === 'claim'
+          ? 'bg-orange-500 hover:bg-orange-700'
+          : 'bg-lightblue' 
+      }`}
       >
         <button
           onClick={handleClick}
