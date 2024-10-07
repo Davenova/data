@@ -86,30 +86,31 @@ export default function Home() {
 
   if (!user) return <div className="container mx-auto p-4">Loading...</div>;
 
-  return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Welcome, {user.firstName}!</h1>
-      <p>Your current points: {user.points}</p>
-      <button
-        onClick={handleClick}
-        disabled={buttonStage === 'claimed'}
-        className={`py-2 px-4 rounded mt-4 ${
-          buttonStage === 'check'
-            ? 'bg-green-500 hover:bg-green-700'
-            : buttonStage === 'claim'
-            ? 'bg-orange-500 hover:bg-orange-700'
-            : 'bg-lightblue cursor-not-allowed'
-        } text-white font-bold`}
-      >
-        {buttonStage === 'check' && 'Check'}
-        {buttonStage === 'claim' && 'Claim'}
-        {buttonStage === 'claimed' && 'Claimed'}
-      </button>
-      {notification && (
-        <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
-          {notification}
-        </div>
-      )}
-    </div>
-  );
+return (
+  <div className="container mx-auto p-4">
+    <h1 className="text-2xl font-bold mb-4">Welcome, {user.firstName}!</h1>
+    <p>Your current points: {user.points}</p>
+    <button
+      onClick={handleClick}
+      disabled={buttonStage === 'claimed'}
+      className={`py-2 px-4 rounded mt-4 ${
+        buttonStage === 'check'
+          ? 'bg-green-500 hover:bg-green-700'
+          : buttonStage === 'claim'
+          ? 'bg-orange-500 hover:bg-orange-700'
+          : 'bg-lightblue text-white cursor-not-allowed' // Updated this line
+      } font-bold`}
+    >
+      {buttonStage === 'check' && 'Check'}
+      {buttonStage === 'claim' && 'Claim'}
+      {buttonStage === 'claimed' && 'Claimed'}
+    </button>
+    {notification && (
+      <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
+        {notification}
+      </div>
+    )}
+  </div>
+);
+
 }
