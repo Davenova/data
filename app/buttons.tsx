@@ -1,6 +1,7 @@
 "use client"; // Mark this component as a Client Component
 
 import React from 'react';
+import './buttons.css'; // Import the external CSS file
 
 export default function Buttons() {
     const openYouTube = () => {
@@ -14,22 +15,6 @@ export default function Buttons() {
             <button>Button 2</button>
             <button>Button 3</button>
             <button>Button 4</button>
-
-            <style jsx>{`
-                button {
-                    padding: 10px 20px;
-                    margin: 10px;
-                    background-color: lightblue;
-                    border: none;
-                    border-radius: 5px;
-                    cursor: pointer;
-                }
-
-                button:hover {
-                    background-color: blue;
-                    color: white;
-                }
-            `}</style>
         </div>
     );
 }
