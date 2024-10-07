@@ -1,14 +1,13 @@
 button {
     padding: 10px 20px;
     margin: 10px;
-    background-color: lightblue !important;
+    background-color: lightblue; /* Light blue background by default */
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    color: black; 
 }
 
 button:hover {
-    background-color: blue !important; 
+    background-color: blue; /* Deep blue on hover */
     color: white;
 }
