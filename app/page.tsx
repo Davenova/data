@@ -81,25 +81,26 @@ export default function Home() {
   const handleButtonClick1 = () => {
     if (buttonStage1 === 'check') {
       window.open('https://youtube.com', '_blank');
-      setButtonStage1('claim');
+      setButtonStage1('claim'); // Change to claim after opening the link
     }
   }
 
   const handleButtonClick2 = () => {
     if (buttonStage2 === 'check') {
-      handleIncreasePoints();
-      setButtonStage2('claim');
+      setButtonStage2('claim'); // Change to claim without opening link
     }
   }
 
   const handleClaim1 = () => {
     if (buttonStage1 === 'claim') {
+      handleIncreasePoints(); // Add points when claiming
       setButtonStage1('claimed');
     }
   }
 
   const handleClaim2 = () => {
     if (buttonStage2 === 'claim') {
+      handleIncreasePoints(); // Add points when claiming
       setButtonStage2('claimed');
     }
   }
