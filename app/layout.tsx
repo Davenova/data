@@ -1,7 +1,8 @@
-"use client"
+// Add this at the top of the file to make it a Client Component
+"use client";
 
 import type { Metadata } from "next";
-import './globals.css'; // Importing the global styles (which will include the CSS from styles.css)
+import './globals.css';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import { useState, useEffect } from 'react';
