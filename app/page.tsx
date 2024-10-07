@@ -15,7 +15,7 @@ export default function Home() {
   const [user, setUser] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [notification, setNotification] = useState('')
-  
+
   // State for both buttons
   const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check')
   const [buttonStage2, setButtonStage2] = useState<'check' | 'claim' | 'claimed'>('check')
@@ -79,17 +79,28 @@ export default function Home() {
   }
 
   const handleButtonClick1 = () => {
-    window.open('https://youtube.com', '_blank');
     if (buttonStage1 === 'check') {
+      window.open('https://youtube.com', '_blank');
       setButtonStage1('claim');
     }
   }
 
   const handleButtonClick2 = () => {
-    window.open('https://twitter.com', '_blank');
     if (buttonStage2 === 'check') {
       handleIncreasePoints();
       setButtonStage2('claim');
+    }
+  }
+
+  const handleClaim1 = () => {
+    if (buttonStage1 === 'claim') {
+      setButtonStage1('claimed');
+    }
+  }
+
+  const handleClaim2 = () => {
+    if (buttonStage2 === 'claim') {
+      setButtonStage2('claimed');
     }
   }
 
@@ -117,7 +128,10 @@ export default function Home() {
         }`}
       >
         <button
-          onClick={handleButtonClick1}
+          onClick={() => {
+            handleButtonClick1();
+            handleClaim1();
+          }}
           disabled={buttonStage1 === 'claimed'}
           className={`w-full text-white font-bold py-2 rounded ${
             buttonStage1 === 'claimed' ? 'cursor-not-allowed' : ''
@@ -140,7 +154,10 @@ export default function Home() {
         }`}
       >
         <button
-          onClick={handleButtonClick2}
+          onClick={() => {
+            handleButtonClick2();
+            handleClaim2();
+          }}
           disabled={buttonStage2 === 'claimed'}
           className={`w-full text-white font-bold py-2 rounded ${
             buttonStage2 === 'claimed' ? 'cursor-not-allowed' : ''
