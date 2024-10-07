@@ -24,4 +24,8 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  .bg-lightblue {
+    background-color: lightblue; /* Set the background color */
+  }
 }
