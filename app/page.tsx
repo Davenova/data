@@ -15,7 +15,10 @@ export default function Home() {
   const [user, setUser] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [notification, setNotification] = useState('')
-  const [buttonStage, setButtonStage] = useState<'check' | 'claim' | 'claimed'>('check')
+  
+  // State for both buttons
+  const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check')
+  const [buttonStage2, setButtonStage2] = useState<'check' | 'claim' | 'claimed'>('check')
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
@@ -51,36 +54,42 @@ export default function Home() {
     }
   }, [])
 
-  const handleClick = () => {
-    if (buttonStage === 'check') {
-      // Open YouTube link
-      window.open('https://youtube.com', '_blank')
-      setButtonStage('claim')
-    } else if (buttonStage === 'claim') {
-      // Increase points
-      if (user) {
-        fetch('/api/increase-points', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ telegramId: user.telegramId }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.success) {
-              setUser({ ...user, points: data.points })
-              setButtonStage('claimed')
-              setNotification('Points increased successfully!')
-              setTimeout(() => setNotification(''), 3000)
-            } else {
-              setError('Failed to increase points')
-            }
-          })
-          .catch(() => {
-            setError('An error occurred while increasing points')
-          })
+  const handleIncreasePoints = async () => {
+    if (!user) return
+
+    try {
+      const res = await fetch('/api/increase-points', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ telegramId: user.telegramId }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setUser({ ...user, points: data.points })
+        setNotification('Points increased successfully!')
+        setTimeout(() => setNotification(''), 3000)
+      } else {
+        setError('Failed to increase points')
       }
+    } catch {
+      setError('An error occurred while increasing points')
+    }
+  }
+
+  const handleButtonClick1 = () => {
+    window.open('https://youtube.com', '_blank');
+    if (buttonStage1 === 'check') {
+      setButtonStage1('claim');
+    }
+  }
+
+  const handleButtonClick2 = () => {
+    window.open('https://twitter.com', '_blank');
+    if (buttonStage2 === 'check') {
+      handleIncreasePoints();
+      setButtonStage2('claim');
     }
   }
 
@@ -90,37 +99,59 @@ export default function Home() {
 
   if (!user) return <div className="container mx-auto p-4">Loading...</div>
 
- return (
-  <div className="container mx-auto p-4">
-    <h1 className="text-2xl font-bold mb-4 text-center">Welcome, {user.firstName}!</h1>
-    
-    {/* Centered points display */}
-    <div className="text-center mb-4">
-      <p className="text-lg">Your current points: {user.points}</p>
-    </div>
-    
-    <div
-      className={`py-2 px-4 rounded mt-4 ${
-        buttonStage === 'check'
-          ? 'bg-green-500 hover:bg-green-700'
-          : buttonStage === 'claim'
-          ? 'bg-orange-500 hover:bg-orange-700'
-          : 'bg-lightblue' 
-      }`}
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4 text-center">Welcome, {user.firstName}!</h1>
+      <div className="text-center mb-4">
+        <p className="text-lg">Your current points: {user.points}</p>
+      </div>
+
+      {/* First Button for YouTube */}
+      <div
+        className={`py-2 px-4 rounded mt-4 ${
+          buttonStage1 === 'check'
+            ? 'bg-green-500 hover:bg-green-700'
+            : buttonStage1 === 'claim'
+            ? 'bg-orange-500 hover:bg-orange-700'
+            : 'bg-lightblue'
+        }`}
       >
         <button
-          onClick={handleClick}
-          disabled={buttonStage === 'claimed'}
+          onClick={handleButtonClick1}
+          disabled={buttonStage1 === 'claimed'}
           className={`w-full text-white font-bold py-2 rounded ${
-            buttonStage === 'claimed' ? 'cursor-not-allowed' : ''
+            buttonStage1 === 'claimed' ? 'cursor-not-allowed' : ''
           }`}
         >
-          {buttonStage === 'check' && 'Check'}
-          {buttonStage === 'claim' && 'Claim'}
-          {buttonStage === 'claimed' && 'Claimed'}
+          {buttonStage1 === 'check' && 'Check'}
+          {buttonStage1 === 'claim' && 'Claim'}
+          {buttonStage1 === 'claimed' && 'Claimed'}
         </button>
       </div>
-      
+
+      {/* Second Button for Twitter */}
+      <div
+        className={`py-2 px-4 rounded mt-4 ${
+          buttonStage2 === 'check'
+            ? 'bg-green-500 hover:bg-green-700'
+            : buttonStage2 === 'claim'
+            ? 'bg-orange-500 hover:bg-orange-700'
+            : 'bg-lightblue'
+        }`}
+      >
+        <button
+          onClick={handleButtonClick2}
+          disabled={buttonStage2 === 'claimed'}
+          className={`w-full text-white font-bold py-2 rounded ${
+            buttonStage2 === 'claimed' ? 'cursor-not-allowed' : ''
+          }`}
+        >
+          {buttonStage2 === 'check' && 'Check'}
+          {buttonStage2 === 'claim' && 'Claim'}
+          {buttonStage2 === 'claimed' && 'Claimed'}
+        </button>
+      </div>
+
       {notification && (
         <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
           {notification}
