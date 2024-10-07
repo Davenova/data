@@ -1,7 +1,8 @@
-// This remains a Server Component
+// layout.tsx (Server Component)
 import type { Metadata } from 'next';
 import './globals.css';
 import { Inter } from 'next/font/google';
+import LoadingComponent from './LoadingComponent'; // Import the Client Component
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* The client-side logic will be handled in another component */}
+        <LoadingComponent /> {/* Add the client-side component here */}
         {children}
       </body>
     </html>
