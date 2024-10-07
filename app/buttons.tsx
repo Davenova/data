@@ -1,9 +1,11 @@
 "use client"; // Mark this component as a Client Component
 
-import React from 'react';
+import React, { useState } from 'react';
 import './buttons.css'; // Import the external CSS file
 
 export default function Buttons() {
+    const [clicked, setClicked] = useState(false); // Track whether the button has been clicked
+
     const openYouTube = () => {
         window.open('https://www.youtube.com', '_blank');
         setClicked(true); // Disable button after clicking
