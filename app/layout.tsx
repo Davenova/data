@@ -1,3 +1,5 @@
+"use client"; // Marking this file as a Client Component
+
 import type { Metadata } from "next";
 import './globals.css'; // Assuming you will place the styles from styles.css here
 import { Inter } from 'next/font/google';
