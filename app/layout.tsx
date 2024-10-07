@@ -1,74 +1,68 @@
-"use client"; // Marking this file as a Client Component
-
-import './globals.css'; // Assuming you will place the styles from styles.css here
+import type { Metadata } from "next";
+import './globals.css'; // Importing the global styles (which will include the CSS from styles.css)
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
-import { useEffect, useState } from 'react';
-import { metadata } from './metadata'; // Import the metadata from the metadata.ts file
+import { useState, useEffect } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: 'Telegram Mini App',
+  description: 'A simple Telegram mini app using Next.js and Prisma',
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  // State for controlling loading and home page visibility
   const [loading, setLoading] = useState(true);
-  const [counter, setCounter] = useState(0);
-  const images = ['fa fa-gamepad', 'cool.png'];
 
   useEffect(() => {
-    // Hide loading after 5 seconds
-    const loadingTimer = setTimeout(() => setLoading(false), 5000);
+    // Mimic the script2.js functionality
+    setTimeout(() => {
+      setLoading(false);
+    }, 5000); // Simulating loading time
 
-    // Image change interval
-    const imageInterval = setInterval(() => {
-      setCounter((prevCounter) => (prevCounter === 1 ? 0 : prevCounter + 1));
+    let counter = 0;
+    const imageChangeInterval = setInterval(() => {
+      if (counter === 3) {
+        counter = 0;
+      }
+      changeImage(counter);
+      counter++;
     }, 3000);
 
-    return () => {
-      clearTimeout(loadingTimer);
-      clearInterval(imageInterval);
-    };
+    return () => clearInterval(imageChangeInterval);
   }, []);
 
-  useEffect(() => {
-    // Loading animation for percentage
-    let num = 0;
-    for (let i = 0; i <= 100; i++) {
-      setTimeout(() => {
-        document.querySelector('.loader span')!.textContent = `${num}%`;
-        num++;
-      }, i * 50);
-    }
-  }, []);
+  const changeImage = (counter: number) => {
+    // Logic to change the image
+  };
 
   return (
     <html lang="en">
-      <head>
-        <title>{metadata.title}</title>
-        <meta name="description" content={metadata.description} />
-      </head>
-      <body className={inter.className + " bg-gray-100 font-sans"}>
-        <Script src="https://cdn.tailwindcss.com" strategy="beforeInteractive" />
-        <Script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" strategy="beforeInteractive" />
+      <body className={inter.className}>
+        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
         {loading ? (
-          // Loader Section
-          <div id="loading-container" className="loader">
-            <div className="image">
-              {images[counter].startsWith('fa') ? (
-                <i className={images[counter]}></i>
-              ) : (
-                <img src={images[counter]} alt="Loading icon" />
-              )}
+          <div id="loading-container">
+            <div className="loader">
+              <div className="image">
+                <img src="/cool.png" alt="Loading icon" />
+              </div>
+              <span>Loading...</span>
             </div>
-            <span></span>
           </div>
         ) : (
-          // Home Section
           <div id="home-container">
-            {/* Your home container code here... */}
+            <div className="bg-gradient-to-r from-blue-100 to-blue-600 text-white p-4 flex justify-between items-center">
+              <div className="flex items-center">
+                <img src="/IMG_0113.jpeg" alt="Cat icon" className="mr-2" width="24" height="24" />
+                <span>Check Our Latest Update!</span>
+              </div>
+              <button className="bg-white font-bold text-blue-600 px-4 py-2 rounded-full">Check</button>
+            </div>
+            {/* Continue adding JSX content here based on index.html */}
           </div>
         )}
         {children}
