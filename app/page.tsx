@@ -87,6 +87,7 @@ export default function Home() {
 
   const handleButtonClick2 = () => {
     if (buttonStage2 === 'check') {
+      window.open('https://twitter.com', '_blank');
       setButtonStage2('claim'); // Change to claim without opening link
     }
   }
