@@ -1,13 +1,24 @@
-div button { /* More specific selector */
+/* Default button styles inside div */
+div button {
     padding: 10px 20px;
     margin: 10px;
-    background-color: lightblue;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    color: white;
 }
 
-div button:hover {
-    background-color: blue;
-    color: white;
+/* Different colors for each stage */
+div button.check {
+    background-color: green; /* Green for Check stage */
+}
+
+div button.claim {
+    background-color: orange; /* Orange for Claim stage */
+}
+
+div button.claimed {
+    background-color: lightblue; /* Light blue for Claimed stage */
+    cursor: not-allowed; /* Show it's unclickable */
+    color: black;
 }
