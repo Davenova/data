@@ -90,7 +90,7 @@ export default function RootLayout({
                     <div className="text-gray-500">+50 $PixelDogs</div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out active:bg-blue-900 active:scale-85" onClick={(e) => e.target.style.display = 'none'}>Check</button>
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out active:bg-blue-900 active:scale-85" onClick={(e) => (e.currentTarget as HTMLElement).style.display = 'none'}>Check</button>
                     <div className="bg-blue-500 text-white p-2 rounded-full">
                       <i className="fab fa-youtube"></i>
                     </div>
