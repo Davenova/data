@@ -1,3 +1,5 @@
+"use client"
+
 import type { Metadata } from "next";
 import './globals.css'; // Importing the global styles (which will include the CSS from styles.css)
 import { Inter } from 'next/font/google';
