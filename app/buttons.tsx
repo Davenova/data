@@ -1,3 +1,5 @@
+"use client"; // Mark this component as a Client Component
+
 import React from 'react';
 
 export default function Buttons() {
