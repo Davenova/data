@@ -69,7 +69,7 @@ export default function Home() {
       const data = await res.json()
       if (data.success) {
         setUser({ ...user, points: data.points })
-        setNotification(`Points increased successfully! (+${points})`)
+        setNotification(`Points increased successfully! (+${pointsToAdd})`)
         setTimeout(() => setNotification(''), 3000)
       } else {
         setError('Failed to increase points')
