@@ -54,7 +54,8 @@ export default function Home() {
     }
   }, [])
 
-  const handleIncreasePoints = async () => {
+  // Function to increase points based on pointsToAdd parameter
+  const handleIncreasePoints = async (pointsToAdd: number) => {
     if (!user) return
 
     try {
@@ -63,7 +64,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ telegramId: user.telegramId }),
+        body: JSON.stringify({ telegramId: user.telegramId, pointsToAdd }), // Send pointsToAdd in request
       })
       const data = await res.json()
       if (data.success) {
@@ -96,18 +97,19 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClaim1 = () => {
-  if (buttonStage1 === 'claim') {
-    setIsLoading(true); // Show loading state
-    handleIncreasePoints(); // Immediately increase points
-    setTimeout(() => {
-      setButtonStage1('claimed'); // After 3 seconds, change to 'claimed'
-      setIsLoading(false); // Stop loading after 3 seconds
-    }, 3000); // 3-second delay
-  }
-};
+    if (buttonStage1 === 'claim') {
+      setIsLoading(true); // Show loading state
+      handleIncreasePoints(2); // Increase 2 points for Button 1
+      setTimeout(() => {
+        setButtonStage1('claimed'); // After 3 seconds, change to 'claimed'
+        setIsLoading(false); // Stop loading after 3 seconds
+      }, 3000); // 3-second delay
+    }
+  };
+
   const handleClaim2 = () => {
     if (buttonStage2 === 'claim') {
-      handleIncreasePoints(); // Add points when claiming
+      handleIncreasePoints(1); // Increase 1 point for Button 2
       setButtonStage2('claimed');
     }
   }
@@ -126,31 +128,31 @@ export default function Home() {
       </div>
 
       {/* First Button for YouTube */}
-<div
-  className={`py-2 px-4 rounded mt-4 ${
-    buttonStage1 === 'check'
-      ? 'bg-green-500 hover:bg-green-700'
-      : buttonStage1 === 'claim'
-      ? 'bg-orange-500 hover:bg-orange-700'
-      : 'bg-lightblue'
-  }`}
->
-  <button
-    onClick={() => {
-      if (buttonStage1 === 'check') {
-        handleButtonClick1(); // Opens YouTube link
-      } else if (buttonStage1 === 'claim') {
-        handleClaim1(); // Triggers claim logic
-      }
-    }}
-    disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
-    className={`w-full text-white font-bold py-2 rounded ${
-      buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
-    }`}
-  >
-    {isLoading ? 'Claiming...' : buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'}
-  </button>
-</div>
+      <div
+        className={`py-2 px-4 rounded mt-4 ${
+          buttonStage1 === 'check'
+            ? 'bg-green-500 hover:bg-green-700'
+            : buttonStage1 === 'claim'
+            ? 'bg-orange-500 hover:bg-orange-700'
+            : 'bg-lightblue'
+        }`}
+      >
+        <button
+          onClick={() => {
+            if (buttonStage1 === 'check') {
+              handleButtonClick1(); // Opens YouTube link
+            } else if (buttonStage1 === 'claim') {
+              handleClaim1(); // Triggers claim logic for Button 1 (2 points)
+            }
+          }}
+          disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
+          className={`w-full text-white font-bold py-2 rounded ${
+            buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
+          }`}
+        >
+          {isLoading ? 'Claiming...' : buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'}
+        </button>
+      </div>
 
       {/* Second Button for Twitter */}
       <div
@@ -164,8 +166,11 @@ export default function Home() {
       >
         <button
           onClick={() => {
-            handleButtonClick2();
-            handleClaim2();
+            if (buttonStage2 === 'check') {
+              handleButtonClick2(); // Opens Twitter link
+            } else if (buttonStage2 === 'claim') {
+              handleClaim2(); // Triggers claim logic for Button 2 (1 point)
+            }
           }}
           disabled={buttonStage2 === 'claimed'}
           className={`w-full text-white font-bold py-2 rounded ${
