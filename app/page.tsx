@@ -22,43 +22,39 @@ export default function Home() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-        const tg = window.Telegram.WebApp;
-        tg.ready();
+      const tg = window.Telegram.WebApp
+      tg.ready()
 
-        const initDataUnsafe = tg.initDataUnsafe || {};
+      const initDataUnsafe = tg.initDataUnsafe || {}
 
-        if (initDataUnsafe.user) {
-            fetch('/api/user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(initDataUnsafe.user),
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data.error) {
-                        setError(data.error);
-                    } else {
-                        setUser(data);
-
-                        // Set the claimed button states based on user data
-                        setButtonStage1(data.claimedButton1 ? 'claimed' : 'check');
-                        setButtonStage2(data.claimedButton2 ? 'claimed' : 'check');
-                    }
-                })
-                .catch(() => {
-                    setError('Failed to fetch user data');
-                });
-        } else {
-            setError('No user data available');
-        }
+      if (initDataUnsafe.user) {
+        fetch('/api/user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(initDataUnsafe.user),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              setError(data.error)
+            } else {
+              setUser(data)
+            }
+          })
+          .catch(() => {
+            setError('Failed to fetch user data')
+          })
+      } else {
+        setError('No user data available')
+      }
     } else {
-        setError('This app should be opened in Telegram');
+      setError('This app should be opened in Telegram')
     }
-}, []);
+  }, [])
 
-  const handleIncreasePoints = async (pointsToAdd: number, buttonId: string) => {
+  const handleIncreasePoints = async (points: number) => {
     if (!user) return
 
     try {
@@ -67,12 +63,12 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ telegramId: user.telegramId, pointsToAdd, buttonId }), // Send buttonId along with telegramId and pointsToAdd
+        body: JSON.stringify({ telegramId: user.telegramId, pointsToAdd: points }),
       })
       const data = await res.json()
       if (data.success) {
         setUser({ ...user, points: data.points })
-        setNotification(`Points increased successfully! (+${pointsToAdd})`)
+        setNotification(`Points increased successfully! (${points})`)
         setTimeout(() => setNotification(''), 3000)
       } else {
         setError('Failed to increase points')
@@ -102,7 +98,7 @@ export default function Home() {
   const handleClaim1 = () => {
     if (buttonStage1 === 'claim') {
       setIsLoading(true); // Show loading state
-      handleIncreasePoints(5, 'button1'); // Immediately increase points by 2 for button 1
+      handleIncreasePoints(2); // Immediately increase points by 2
       setTimeout(() => {
         setButtonStage1('claimed'); // After 3 seconds, change to 'claimed'
         setIsLoading(false); // Stop loading after 3 seconds
@@ -112,7 +108,7 @@ export default function Home() {
 
   const handleClaim2 = () => {
     if (buttonStage2 === 'claim') {
-      handleIncreasePoints(3, 'button2'); // Add points by 1 for button 2
+      handleIncreasePoints(1); // Add points when claiming
       setButtonStage2('claimed');
     }
   }
@@ -131,36 +127,35 @@ export default function Home() {
       </div>
 
       {/* First Button for YouTube */}
-<div
-  className={`py-2 px-4 rounded mt-4 ${
-    buttonStage1 === 'check'
-      ? 'bg-green-500 hover:bg-green-700'
-      : buttonStage1 === 'claim'
-      ? 'bg-orange-500 hover:bg-orange-700'
-      : 'bg-lightblue'
-  }`}
->
-  <button
-    onClick={() => {
-      if (buttonStage1 === 'check') {
-        handleButtonClick1(); // Opens YouTube link
-      } else if (buttonStage1 === 'claim') {
-        handleClaim1(); // Triggers claim logic
-      }
-    }}
-    disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
-    className={`w-full text-white font-bold py-2 rounded ${
-      buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
-    }`}
-  >
-    {isLoading ? (
-      <div className="spinner"></div> // Show spinner instead of text
-    ) : (
-      buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'
-    )}
-  </button>
-</div>
-
+      <div
+        className={`py-2 px-4 rounded mt-4 ${
+          buttonStage1 === 'check'
+            ? 'bg-green-500 hover:bg-green-700'
+            : buttonStage1 === 'claim'
+            ? 'bg-orange-500 hover:bg-orange-700'
+            : 'bg-lightblue'
+        }`}
+      >
+        <button
+          onClick={() => {
+            if (buttonStage1 === 'check') {
+              handleButtonClick1(); // Opens YouTube link
+            } else if (buttonStage1 === 'claim') {
+              handleClaim1(); // Triggers claim logic
+            }
+          }}
+          disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
+          className={`w-full text-white font-bold py-2 rounded ${
+            buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
+          }`}
+        >
+          {isLoading ? (
+            <div className="spinner"></div> // Show spinner instead of text
+          ) : (
+            buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'
+          )}
+        </button>
+      </div>
 
       {/* Second Button for Twitter */}
       <div
