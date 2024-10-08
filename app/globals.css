@@ -36,8 +36,13 @@ body {
     width: 24px;
     height: 24px;
     animation: spin 1s linear infinite;
+    position: absolute; /* Use absolute positioning */
   }
-} /* Closing brace for @layer utilities */
+}/* Closing brace for @layer utilities */
+
+.relative {
+  position: relative;
+}
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
