@@ -19,7 +19,10 @@ export async function POST(req: NextRequest) {
                     telegramId: userData.id,
                     username: userData.username || '',
                     firstName: userData.first_name || '',
-                    lastName: userData.last_name || ''
+                    lastName: userData.last_name || '',
+                    button1Claimed: userData.button1Claimed || '',
+                    button2Claimed: userData.button2Claimed || '',
+                    
                 }
             })
         }
