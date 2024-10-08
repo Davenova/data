@@ -97,22 +97,22 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClaim1 = () => {
-    if (buttonStage1 === 'claim') {
-      setIsLoading(true); // Show loading state
-      handleIncreasePoints(5); // Increase 2 points for Button 1
-      setTimeout(() => {
-        setButtonStage1('claimed'); // After 3 seconds, change to 'claimed'
-        setIsLoading(false); // Stop loading after 3 seconds
-      }, 3000); // 3-second delay
-    }
-  };
-
-  const handleClaim2 = () => {
-    if (buttonStage2 === 'claim') {
-      handleIncreasePoints(3); // Increase 1 point for Button 2
-      setButtonStage2('claimed');
-    }
+  if (buttonStage1 === 'claim') {
+    setIsLoading(true);
+    handleIncreasePoints(5, 'button1'); // Pass 'button1' to API
+    setTimeout(() => {
+      setButtonStage1('claimed');
+      setIsLoading(false);
+    }, 3000);
   }
+};
+
+const handleClaim2 = () => {
+  if (buttonStage2 === 'claim') {
+    handleIncreasePoints(3, 'button2'); // Pass 'button2' to API
+    setButtonStage2('claimed');
+  }
+};
 
   if (error) {
     return <div className="container mx-auto p-4 text-red-500">{error}</div>
