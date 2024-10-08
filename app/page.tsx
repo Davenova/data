@@ -21,63 +21,68 @@ export default function Home() {
   const [buttonStage2, setButtonStage2] = useState<'check' | 'claim' | 'claimed'>('check')
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp
-      tg.ready()
+  if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+    const tg = window.Telegram.WebApp
+    tg.ready()
 
-      const initDataUnsafe = tg.initDataUnsafe || {}
+    const initDataUnsafe = tg.initDataUnsafe || {}
 
-      if (initDataUnsafe.user) {
-        fetch('/api/user', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(initDataUnsafe.user),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) {
-              setError(data.error)
-            } else {
-              setUser(data)
-            }
-          })
-          .catch(() => {
-            setError('Failed to fetch user data')
-          })
-      } else {
-        setError('No user data available')
-      }
-    } else {
-      setError('This app should be opened in Telegram')
-    }
-  }, [])
-
-  // Function to increase points based on pointsToAdd parameter
-  const handleIncreasePoints = async (pointsToAdd: number) => {
-    if (!user) return
-
-    try {
-      const res = await fetch('/api/increase-points', {
+    if (initDataUnsafe.user) {
+      fetch('/api/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ telegramId: user.telegramId, pointsToAdd }), // Send pointsToAdd in request
+        body: JSON.stringify(initDataUnsafe.user),
       })
-      const data = await res.json()
-      if (data.success) {
-        setUser({ ...user, points: data.points })
-        setNotification(`Points increased successfully! (+${pointsToAdd})`)
-        setTimeout(() => setNotification(''), 3000)
-      } else {
-        setError('Failed to increase points')
-      }
-    } catch {
-      setError('An error occurred while increasing points')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            setError(data.error)
+          } else {
+            setUser(data)
+            // Set button states based on the claimed state from MongoDB
+            if (data.button1Claimed) setButtonStage1('claimed')
+            if (data.button2Claimed) setButtonStage2('claimed')
+          }
+        })
+        .catch(() => {
+          setError('Failed to fetch user data')
+        })
+    } else {
+      setError('No user data available')
     }
+  } else {
+    setError('This app should be opened in Telegram')
   }
+}, [])
+
+
+  // Function to increase points based on pointsToAdd parameter
+  const handleIncreasePoints = async (pointsToAdd: number, button: string) => {
+  if (!user) return;
+
+  try {
+    const res = await fetch('/api/increase-points', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ telegramId: user.telegramId, button }), // Pass button information
+    });
+    const data = await res.json();
+    if (data.success) {
+      setUser({ ...user, points: data.points });
+      setNotification(`Points increased successfully! (+${pointsToAdd})`);
+      setTimeout(() => setNotification(''), 3000);
+    } else {
+      setError('Failed to increase points');
+    }
+  } catch {
+    setError('An error occurred while increasing points');
+  }
+};
+
 
   const handleButtonClick1 = () => {
     if (buttonStage1 === 'check') {
