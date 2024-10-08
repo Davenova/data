@@ -131,30 +131,36 @@ export default function Home() {
       </div>
 
       {/* First Button for YouTube */}
-      <div
-        className={`py-2 px-4 rounded mt-4 ${
-          buttonStage1 === 'check'
-            ? 'bg-green-500 hover:bg-green-700'
-            : buttonStage1 === 'claim'
-            ? 'bg-orange-500 hover:bg-orange-700'
-            : 'bg-lightblue'
-        }`}
-      >
-        <button
-  onClick={() => {
-    if (buttonStage1 === 'check') {
-      handleButtonClick1(); // Opens YouTube link
-    } else if (buttonStage1 === 'claim') {
-      handleClaim1(); // Triggers claim logic
-    }
-  }}
-  disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
-  className={`w-full text-white font-bold py-2 rounded ${
-    buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
+<div
+  className={`py-2 px-4 rounded mt-4 ${
+    buttonStage1 === 'check'
+      ? 'bg-green-500 hover:bg-green-700'
+      : buttonStage1 === 'claim'
+      ? 'bg-orange-500 hover:bg-orange-700'
+      : 'bg-lightblue'
   }`}
 >
-  {isLoading ? <div className="spinner"></div> : buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'}
-</button>
+  <button
+    onClick={() => {
+      if (buttonStage1 === 'check') {
+        handleButtonClick1(); // Opens YouTube link
+      } else if (buttonStage1 === 'claim') {
+        handleClaim1(); // Triggers claim logic
+      }
+    }}
+    disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
+    className={`w-full text-white font-bold py-2 rounded ${
+      buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
+    }`}
+  >
+    {isLoading ? (
+      <div className="spinner"></div> // Show spinner instead of text
+    ) : (
+      buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'
+    )}
+  </button>
+</div>
+
 
       {/* Second Button for Twitter */}
       <div
