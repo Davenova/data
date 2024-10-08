@@ -20,6 +20,10 @@ export default function Home() {
   const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check')
   const [buttonStage2, setButtonStage2] = useState<'check' | 'claim' | 'claimed'>('check')
 
+  // New loading states for each button
+  const [isLoading1, setIsLoading1] = useState(false);
+  const [isLoading2, setIsLoading2] = useState(false);
+
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp
@@ -63,12 +67,12 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ telegramId: user.telegramId, pointsToAdd: points }),
+        body: JSON.stringify({ telegramId: user.telegramId }),
       })
       const data = await res.json()
       if (data.success) {
         setUser({ ...user, points: data.points })
-        setNotification(`Points increased successfully! (+${points})`)
+        setNotification(`Points increased successfully! (${points})`)
         setTimeout(() => setNotification(''), 3000)
       } else {
         setError('Failed to increase points')
@@ -92,27 +96,24 @@ export default function Home() {
     }
   }
 
-  // New loading spinner state
-  const [isLoading, setIsLoading] = useState(false);
-
   const handleClaim1 = () => {
     if (buttonStage1 === 'claim') {
-      setIsLoading(true); // Show loading state
-      handleIncreasePoints(2); // Immediately increase points for button 1
+      setIsLoading1(true); // Show loading state for button 1
+      handleIncreasePoints(2); // Increase points by 2
       setTimeout(() => {
         setButtonStage1('claimed'); // After 3 seconds, change to 'claimed'
-        setIsLoading(false); // Stop loading after 3 seconds
+        setIsLoading1(false); // Stop loading after 3 seconds
       }, 3000); // 3-second delay
     }
   };
 
   const handleClaim2 = () => {
     if (buttonStage2 === 'claim') {
-      setIsLoading(true); // Show loading state
-      handleIncreasePoints(1); // Immediately increase points for button 2
+      setIsLoading2(true); // Show loading state for button 2
+      handleIncreasePoints(1); // Increase points by 1
       setTimeout(() => {
-        setButtonStage2('claimed'); // After 3 seconds, change to 'claimed'
-        setIsLoading(false); // Stop loading after 3 seconds
+        setButtonStage2('claimed'); // Change to 'claimed'
+        setIsLoading2(false); // Stop loading after 3 seconds
       }, 3000); // 3-second delay
     }
   }
@@ -148,16 +149,12 @@ export default function Home() {
               handleClaim1(); // Triggers claim logic
             }
           }}
-          disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
+          disabled={buttonStage1 === 'claimed' || isLoading1} // Disable when claimed or loading
           className={`w-full text-white font-bold py-2 rounded ${
-            buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
+            buttonStage1 === 'claimed' || isLoading1 ? 'cursor-not-allowed' : ''
           }`}
         >
-          {isLoading ? (
-            <div className="loader"></div> // Loading animation
-          ) : (
-            buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'
-          )}
+          {isLoading1 ? <div className="loader"></div> : buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'}
         </button>
       </div>
 
@@ -176,13 +173,13 @@ export default function Home() {
             handleButtonClick2();
             handleClaim2();
           }}
-          disabled={buttonStage2 === 'claimed' || isLoading} // Disable when claimed
+          disabled={buttonStage2 === 'claimed' || isLoading2} // Disable when claimed or loading
           className={`w-full text-white font-bold py-2 rounded ${
-            buttonStage2 === 'claimed' ? 'cursor-not-allowed' : ''
+            buttonStage2 === 'claimed' || isLoading2 ? 'cursor-not-allowed' : ''
           }`}
         >
-          {buttonStage2 === 'check' && 'Check'}
-          {buttonStage2 === 'claim' && (isLoading ? <div className="loader"></div> : 'Claim')}
+          {isLoading2 ? <div className="loader"></div> : buttonStage2 === 'check' && 'Check'}
+          {buttonStage2 === 'claim' && 'Claim'}
           {buttonStage2 === 'claimed' && 'Claimed'}
         </button>
       </div>
