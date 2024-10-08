@@ -91,11 +91,15 @@ export default function Home() {
     }
   }
 
-  const handleClaim1 = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+const handleClaim1 = () => {
   if (buttonStage1 === 'claim') {
+    setIsLoading(true); // Start loading
     setTimeout(() => {
       handleIncreasePoints(); // Add points when claiming
       setButtonStage1('claimed');
+      setIsLoading(false); // Stop loading
     }, 3000); // 3-second delay before turning into "claimed"
   }
 };
