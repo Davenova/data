@@ -96,12 +96,12 @@ export default function Home() {
 
   const handleClaim1 = () => {
   if (buttonStage1 === 'claim') {
-    setIsLoading(true); // Start loading
-    handleIncreasePoints(); // Immediately call to increase points
+    setIsLoading(true); // Show loading state
+    handleIncreasePoints(); // Immediately increase points
     setTimeout(() => {
-      setButtonStage1('claimed');
-      setIsLoading(false); // Stop loading
-    }, 3000); // 3-second delay before turning into "claimed"
+      setButtonStage1('claimed'); // After 3 seconds, change to 'claimed'
+      setIsLoading(false); // Stop loading after 3 seconds
+    }, 3000); // 3-second delay
   }
 };
   const handleClaim2 = () => {
@@ -124,7 +124,8 @@ export default function Home() {
         <p className="text-lg">Your current points: {user.points}</p>
       </div>
 
-      <div
+      {/* First Button for YouTube */}
+<div
   className={`py-2 px-4 rounded mt-4 ${
     buttonStage1 === 'check'
       ? 'bg-green-500 hover:bg-green-700'
@@ -134,7 +135,13 @@ export default function Home() {
   }`}
 >
   <button
-    onClick={handleButtonClick1} // Only handle button click here
+    onClick={() => {
+      if (buttonStage1 === 'check') {
+        handleButtonClick1(); // Opens YouTube link
+      } else if (buttonStage1 === 'claim') {
+        handleClaim1(); // Triggers claim logic
+      }
+    }}
     disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
     className={`w-full text-white font-bold py-2 rounded ${
       buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
