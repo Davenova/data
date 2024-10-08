@@ -95,16 +95,15 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClaim1 = () => {
-    if (buttonStage1 === 'claim') {
-      setIsLoading(true); // Start loading
-      setTimeout(() => {
-        handleIncreasePoints(); // Add points when claiming
-        setButtonStage1('claimed');
-        setIsLoading(false); // Stop loading
-      }, 3000); // 3-second delay before turning into "claimed"
-    }
-  };
-
+  if (buttonStage1 === 'claim') {
+    setIsLoading(true); // Start loading
+    handleIncreasePoints(); // Immediately call to increase points
+    setTimeout(() => {
+      setButtonStage1('claimed');
+      setIsLoading(false); // Stop loading
+    }, 3000); // 3-second delay before turning into "claimed"
+  }
+};
   const handleClaim2 = () => {
     if (buttonStage2 === 'claim') {
       handleIncreasePoints(); // Add points when claiming
@@ -125,29 +124,25 @@ export default function Home() {
         <p className="text-lg">Your current points: {user.points}</p>
       </div>
 
-      {/* First Button for YouTube */}
       <div
-        className={`py-2 px-4 rounded mt-4 ${
-          buttonStage1 === 'check'
-            ? 'bg-green-500 hover:bg-green-700'
-            : buttonStage1 === 'claim'
-            ? 'bg-orange-500 hover:bg-orange-700'
-            : 'bg-lightblue'
-        }`}
-      >
-        <button
-          onClick={() => {
-            handleButtonClick1();
-            handleClaim1();
-          }}
-          disabled={buttonStage1 === 'claimed'}
-          className={`w-full text-white font-bold py-2 rounded ${
-            buttonStage1 === 'claimed' ? 'cursor-not-allowed' : ''
-          }`}
-        >
-          {isLoading ? 'Loading...' : buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'}
-        </button>
-      </div>
+  className={`py-2 px-4 rounded mt-4 ${
+    buttonStage1 === 'check'
+      ? 'bg-green-500 hover:bg-green-700'
+      : buttonStage1 === 'claim'
+      ? 'bg-orange-500 hover:bg-orange-700'
+      : 'bg-lightblue'
+  }`}
+>
+  <button
+    onClick={handleButtonClick1} // Only handle button click here
+    disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
+    className={`w-full text-white font-bold py-2 rounded ${
+      buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
+    }`}
+  >
+    {isLoading ? 'Loading...' : buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'}
+  </button>
+</div>
 
       {/* Second Button for Twitter */}
       <div
