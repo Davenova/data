@@ -141,21 +141,20 @@ export default function Home() {
         }`}
       >
         <button
-          onClick={() => {
-            if (buttonStage1 === 'check') {
-              handleButtonClick1(); // Opens YouTube link
-            } else if (buttonStage1 === 'claim') {
-              handleClaim1(); // Triggers claim logic
-            }
-          }}
-          disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
-          className={`w-full text-white font-bold py-2 rounded ${
-            buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
-          }`}
-        >
-          {isLoading ? 'Claiming...' : buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'}
-        </button>
-      </div>
+  onClick={() => {
+    if (buttonStage1 === 'check') {
+      handleButtonClick1(); // Opens YouTube link
+    } else if (buttonStage1 === 'claim') {
+      handleClaim1(); // Triggers claim logic
+    }
+  }}
+  disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
+  className={`w-full text-white font-bold py-2 rounded ${
+    buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
+  }`}
+>
+  {isLoading ? <div className="spinner"></div> : buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'}
+</button>
 
       {/* Second Button for Twitter */}
       <div
