@@ -118,69 +118,80 @@ const handleClaim1 = () => {
   if (!user) return <div className="container mx-auto p-4">Loading...</div>
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">Welcome, {user.firstName}!</h1>
-      <div className="text-center mb-4">
-        <p className="text-lg">Your current points: {user.points}</p>
-      </div>
-
-      {/* First Button for YouTube */}
-      <div
-        className={`py-2 px-4 rounded mt-4 ${
-          buttonStage1 === 'check'
-            ? 'bg-green-500 hover:bg-green-700'
-            : buttonStage1 === 'claim'
-            ? 'bg-orange-500 hover:bg-orange-700'
-            : 'bg-lightblue'
-        }`}
-      >
-        <button
-          onClick={() => {
-            handleButtonClick1();
-            handleClaim1();
-          }}
-          disabled={buttonStage1 === 'claimed'}
-          className={`w-full text-white font-bold py-2 rounded ${
-            buttonStage1 === 'claimed' ? 'cursor-not-allowed' : ''
-          }`}
-        >
-          {buttonStage1 === 'check' && 'Check'}
-          {buttonStage1 === 'claim' && 'Claim'}
-          {buttonStage1 === 'claimed' && 'Claimed'}
-        </button>
-      </div>
-
-      {/* Second Button for Twitter */}
-      <div
-        className={`py-2 px-4 rounded mt-4 ${
-          buttonStage2 === 'check'
-            ? 'bg-green-500 hover:bg-green-700'
-            : buttonStage2 === 'claim'
-            ? 'bg-orange-500 hover:bg-orange-700'
-            : 'bg-lightblue'
-        }`}
-      >
-        <button
-          onClick={() => {
-            handleButtonClick2();
-            handleClaim2();
-          }}
-          disabled={buttonStage2 === 'claimed'}
-          className={`w-full text-white font-bold py-2 rounded ${
-            buttonStage2 === 'claimed' ? 'cursor-not-allowed' : ''
-          }`}
-        >
-          {buttonStage2 === 'check' && 'Check'}
-          {buttonStage2 === 'claim' && 'Claim'}
-          {buttonStage2 === 'claimed' && 'Claimed'}
-        </button>
-      </div>
-
-      {notification && (
-        <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
-          {notification}
-        </div>
-      )}
+  <div className="container mx-auto p-4">
+    <h1 className="text-2xl font-bold mb-4 text-center">Welcome, {user.firstName}!</h1>
+    <div className="text-center mb-4">
+      <p className="text-lg">Your current points: {user.points}</p>
     </div>
-  )
-}
+
+    {/* First Button for YouTube */}
+    <div
+      className={`py-2 px-4 rounded mt-4 ${
+        buttonStage1 === 'check'
+          ? 'bg-green-500 hover:bg-green-700'
+          : buttonStage1 === 'claim'
+          ? 'bg-orange-500 hover:bg-orange-700'
+          : 'bg-lightblue'
+      }`}
+    >
+      <button
+        onClick={() => {
+          if (buttonStage1 === 'check') {
+            handleButtonClick1();
+          } else {
+            handleClaim1();
+          }
+        }}
+        disabled={buttonStage1 === 'claimed'}
+        className={`w-full text-white font-bold py-2 rounded ${
+          buttonStage1 === 'claimed' ? 'cursor-not-allowed' : ''
+        }`}
+      >
+        {isLoading ? (
+          <div className="loader"></div> // Loading spinner
+        ) : buttonStage1 === 'check' ? (
+          'Check'
+        ) : buttonStage1 === 'claim' ? (
+          'Claim'
+        ) : (
+          'Claimed'
+        )}
+      </button>
+    </div>
+
+    {/* Second Button for Twitter */}
+    <div
+      className={`py-2 px-4 rounded mt-4 ${
+        buttonStage2 === 'check'
+          ? 'bg-green-500 hover:bg-green-700'
+          : buttonStage2 === 'claim'
+          ? 'bg-orange-500 hover:bg-orange-700'
+          : 'bg-lightblue'
+      }`}
+    >
+      <button
+        onClick={() => {
+          if (buttonStage2 === 'check') {
+            handleButtonClick2();
+          } else {
+            handleClaim2();
+          }
+        }}
+        disabled={buttonStage2 === 'claimed'}
+        className={`w-full text-white font-bold py-2 rounded ${
+          buttonStage2 === 'claimed' ? 'cursor-not-allowed' : ''
+        }`}
+      >
+        {buttonStage2 === 'check' && 'Check'}
+        {buttonStage2 === 'claim' && 'Claim'}
+        {buttonStage2 === 'claimed' && 'Claimed'}
+      </button>
+    </div>
+
+    {notification && (
+      <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
+        {notification}
+      </div>
+    )}
+  </div>
+);
