@@ -92,11 +92,13 @@ export default function Home() {
   }
 
   const handleClaim1 = () => {
-    if (buttonStage1 === 'claim') {
+  if (buttonStage1 === 'claim') {
+    setTimeout(() => {
       handleIncreasePoints(); // Add points when claiming
       setButtonStage1('claimed');
-    }
+    }, 3000); // 3-second delay before turning into "claimed"
   }
+};
 
   const handleClaim2 = () => {
     if (buttonStage2 === 'claim') {
