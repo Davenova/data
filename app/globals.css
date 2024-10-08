@@ -36,13 +36,13 @@ body {
     width: 24px;
     height: 24px;
     animation: spin 1s linear infinite;
-    position: absolute; /* Use absolute positioning */
+    position: absolute; /* Positioning for centering */
+    top: 50%; /* Move to the vertical center */
+    left: 50%; /* Move to the horizontal center */
+    transform: translate(-50%, -50%); /* Adjust for half the size */
   }
-}/* Closing brace for @layer utilities */
 
-.relative {
-  position: relative;
-}
+} /* Closing brace for @layer utilities */
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
