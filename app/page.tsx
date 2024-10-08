@@ -79,20 +79,14 @@ export default function Home() {
   }
 
   const handleButtonClick1 = () => {
-  if (buttonStage1 === 'check') {
-    window.open('https://youtube.com', '_blank');
-    setButtonStage1('claim');
-  } else if (buttonStage1 === 'claim') {
-    setTimeout(() => {
-      setButtonStage1('claimed');
-      setPoints(points + 1); // Increase points after turning to claimed
-    }, 3000); // 3-second delay
+    if (buttonStage1 === 'check') {
+      window.open('https://youtube.com', '_blank');
+      setButtonStage1('claim'); // Change to claim after opening the link
+    }
   }
-};
 
   const handleButtonClick2 = () => {
     if (buttonStage2 === 'check') {
-      window.open('https://twitter.com', '_blank');
       setButtonStage2('claim'); // Change to claim without opening link
     }
   }
