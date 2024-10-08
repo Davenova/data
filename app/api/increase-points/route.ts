@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function POST(req: NextRequest) {
     try {
-        const { telegramId, pointsToAdd } = await req.json() // Receive pointsToAdd
+        const { telegramId, pointsToAdd, buttonId } = await req.json() // Receive buttonId along with telegramId and pointsToAdd
 
         if (!telegramId) {
             return NextResponse.json({ error: 'Invalid telegramId' }, { status: 400 })
@@ -13,7 +13,10 @@ export async function POST(req: NextRequest) {
             where: { telegramId },
             data: { 
                 points: { increment: pointsToAdd }, // Increment points by pointsToAdd
-                claimed: true // Mark as claimed
+                claimed: {
+                    // Update claimed status based on buttonId
+                    [buttonId]: true 
+                }
             }
         })
 
