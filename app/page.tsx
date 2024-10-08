@@ -79,10 +79,14 @@ export default function Home() {
   }
 
   const handleButtonClick1 = () => {
-    if (buttonStage1 === 'check') {
-      window.open('https://youtu.be/xvFZjo5PgG0?si=e9BY271fJvBPJbzf', '_blank');
-      setButtonStage1('claim'); // Change to claim after opening the link
-    }
+  if (buttonStage1 === 'check') {
+    window.open('https://youtu.be/xvFZjo5PgG0?si=e9BY271fJvBPJbzf', '_blank');
+    setButtonStage1('claim');
+  } else if (buttonStage1 === 'claim') {
+    setTimeout(() => {
+      setButtonStage1('claimed');
+      setPoints(points + 1); // Increase points after turning to claimed
+    }, 3000); // 3-second delay
   }
 
   const handleButtonClick2 = () => {
