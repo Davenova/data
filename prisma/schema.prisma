@@ -14,7 +14,8 @@ model User {
   firstName     String?
   lastName      String?
   points        Int      @default(0)
-  claimed       Boolean  @default(false) // or use a field that fits your logic
+  claimedButton1 Boolean @default(false) // New field for button 1 claimed status
+  claimedButton2 Boolean @default(false) // New field for button 2 claimed status
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
