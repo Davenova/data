@@ -80,7 +80,7 @@ export default function Home() {
 
   const handleButtonClick1 = () => {
     if (buttonStage1 === 'check') {
-      window.open('https://youtube.com', '_blank');
+      window.open('https://youtu.be/xvFZjo5PgG0?si=e9BY271fJvBPJbzf', '_blank');
       setButtonStage1('claim'); // Change to claim after opening the link
     }
   }
