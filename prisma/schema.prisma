@@ -14,8 +14,7 @@ model User {
   firstName     String?
   lastName      String?
   points        Int      @default(0)
-  button1Claimed Boolean  @default(false) // Track if button 1 is claimed
-  button2Claimed Boolean  @default(false) // Track if button 2 is claimed
+  claimed  Boolean @default(false) // or use a field that fits your logic
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
