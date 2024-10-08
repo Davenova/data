@@ -22,43 +22,39 @@ export default function Home() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-        const tg = window.Telegram.WebApp;
-        tg.ready();
+      const tg = window.Telegram.WebApp
+      tg.ready()
 
-        const initDataUnsafe = tg.initDataUnsafe || {};
+      const initDataUnsafe = tg.initDataUnsafe || {}
 
-        if (initDataUnsafe.user) {
-            fetch('/api/user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(initDataUnsafe.user),
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data.error) {
-                        setError(data.error);
-                    } else {
-                        setUser(data);
-
-                        // Set the claimed button states based on user data
-                        setButtonStage1(data.claimedButton1 ? 'claimed' : 'check');
-                        setButtonStage2(data.claimedButton2 ? 'claimed' : 'check');
-                    }
-                })
-                .catch(() => {
-                    setError('Failed to fetch user data');
-                });
-        } else {
-            setError('No user data available');
-        }
+      if (initDataUnsafe.user) {
+        fetch('/api/user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(initDataUnsafe.user),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              setError(data.error)
+            } else {
+              setUser(data)
+            }
+          })
+          .catch(() => {
+            setError('Failed to fetch user data')
+          })
+      } else {
+        setError('No user data available')
+      }
     } else {
-        setError('This app should be opened in Telegram');
+      setError('This app should be opened in Telegram')
     }
-}, []);
+  }, [])
 
-  const handleIncreasePoints = async (pointsToAdd: number, buttonId: string) => {
+  const handleIncreasePoints = async (points: number) => {
     if (!user) return
 
     try {
@@ -67,12 +63,12 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ telegramId: user.telegramId, pointsToAdd, buttonId }), // Send buttonId along with telegramId and pointsToAdd
+        body: JSON.stringify({ telegramId: user.telegramId, pointsToAdd: points }),
       })
       const data = await res.json()
       if (data.success) {
         setUser({ ...user, points: data.points })
-        setNotification(`Points increased successfully! (+${pointsToAdd})`)
+        setNotification(`Points increased successfully! (+${points})`)
         setTimeout(() => setNotification(''), 3000)
       } else {
         setError('Failed to increase points')
@@ -102,7 +98,7 @@ export default function Home() {
   const handleClaim1 = () => {
     if (buttonStage1 === 'claim') {
       setIsLoading(true); // Show loading state
-      handleIncreasePoints(5, 'button1'); // Immediately increase points by 2 for button 1
+      handleIncreasePoints(2); // Immediately increase points for button 1
       setTimeout(() => {
         setButtonStage1('claimed'); // After 3 seconds, change to 'claimed'
         setIsLoading(false); // Stop loading after 3 seconds
@@ -112,8 +108,12 @@ export default function Home() {
 
   const handleClaim2 = () => {
     if (buttonStage2 === 'claim') {
-      handleIncreasePoints(3, 'button2'); // Add points by 1 for button 2
-      setButtonStage2('claimed');
+      setIsLoading(true); // Show loading state
+      handleIncreasePoints(1); // Immediately increase points for button 2
+      setTimeout(() => {
+        setButtonStage2('claimed'); // After 3 seconds, change to 'claimed'
+        setIsLoading(false); // Stop loading after 3 seconds
+      }, 3000); // 3-second delay
     }
   }
 
@@ -141,20 +141,25 @@ export default function Home() {
         }`}
       >
         <button
-  onClick={() => {
-    if (buttonStage1 === 'check') {
-      handleButtonClick1(); // Opens YouTube link
-    } else if (buttonStage1 === 'claim') {
-      handleClaim1(); // Triggers claim logic
-    }
-  }}
-  disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
-  className={`w-full text-white font-bold py-2 rounded ${
-    buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
-  }`}
->
-  {isLoading ? <div className="spinner"></div> : buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'}
-</button>
+          onClick={() => {
+            if (buttonStage1 === 'check') {
+              handleButtonClick1(); // Opens YouTube link
+            } else if (buttonStage1 === 'claim') {
+              handleClaim1(); // Triggers claim logic
+            }
+          }}
+          disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
+          className={`w-full text-white font-bold py-2 rounded ${
+            buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
+          }`}
+        >
+          {isLoading ? (
+            <div className="loader"></div> // Loading animation
+          ) : (
+            buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'
+          )}
+        </button>
+      </div>
 
       {/* Second Button for Twitter */}
       <div
@@ -171,13 +176,13 @@ export default function Home() {
             handleButtonClick2();
             handleClaim2();
           }}
-          disabled={buttonStage2 === 'claimed'}
+          disabled={buttonStage2 === 'claimed' || isLoading} // Disable when claimed
           className={`w-full text-white font-bold py-2 rounded ${
             buttonStage2 === 'claimed' ? 'cursor-not-allowed' : ''
           }`}
         >
           {buttonStage2 === 'check' && 'Check'}
-          {buttonStage2 === 'claim' && 'Claim'}
+          {buttonStage2 === 'claim' && (isLoading ? <div className="loader"></div> : 'Claim')}
           {buttonStage2 === 'claimed' && 'Claimed'}
         </button>
       </div>
