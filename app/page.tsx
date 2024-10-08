@@ -147,7 +147,7 @@ export default function Home() {
       buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
     }`}
   >
-    {isLoading ? 'Loading...' : buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'}
+    {isLoading ? 'Claiming...' : buttonStage1 === 'check' ? 'Check' : buttonStage1 === 'claim' ? 'Claim' : 'Claimed'}
   </button>
 </div>
 
