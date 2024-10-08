@@ -101,7 +101,7 @@ export default function Home() {
     setTimeout(() => {
       setButtonStage1('claimed'); // After 3 seconds, change to 'claimed'
       setIsLoading(false); // Stop loading after 3 seconds
-    }, 1500); // 1.5-second delay
+    }, 3000); // 3-second delay
   }
 };
   const handleClaim2 = () => {
