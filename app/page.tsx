@@ -22,37 +22,41 @@ export default function Home() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp
-      tg.ready()
+        const tg = window.Telegram.WebApp;
+        tg.ready();
 
-      const initDataUnsafe = tg.initDataUnsafe || {}
+        const initDataUnsafe = tg.initDataUnsafe || {};
 
-      if (initDataUnsafe.user) {
-        fetch('/api/user', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(initDataUnsafe.user),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) {
-              setError(data.error)
-            } else {
-              setUser(data)
-            }
-          })
-          .catch(() => {
-            setError('Failed to fetch user data')
-          })
-      } else {
-        setError('No user data available')
-      }
+        if (initDataUnsafe.user) {
+            fetch('/api/user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(initDataUnsafe.user),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.error) {
+                        setError(data.error);
+                    } else {
+                        setUser(data);
+
+                        // Set the claimed button states based on user data
+                        setButtonStage1(data.claimedButton1 ? 'claimed' : 'check');
+                        setButtonStage2(data.claimedButton2 ? 'claimed' : 'check');
+                    }
+                })
+                .catch(() => {
+                    setError('Failed to fetch user data');
+                });
+        } else {
+            setError('No user data available');
+        }
     } else {
-      setError('This app should be opened in Telegram')
+        setError('This app should be opened in Telegram');
     }
-  }, [])
+}, []);
 
   const handleIncreasePoints = async (pointsToAdd: number, buttonId: string) => {
     if (!user) return
