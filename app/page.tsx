@@ -108,8 +108,12 @@ export default function Home() {
 
   const handleClaim2 = () => {
     if (buttonStage2 === 'claim') {
-      handleIncreasePoints(3, 'button2'); // Add points by 1 for button 2
-      setButtonStage2('claimed');
+      setIsLoading(true); // Show loading state
+      handleIncreasePoints(1); // Immediately increase points for button 2
+      setTimeout(() => {
+        setButtonStage2('claimed'); // After 3 seconds, change to 'claimed'
+        setIsLoading(false); // Stop loading after 3 seconds
+      }, 3000); // 3-second delay
     }
   }
 
