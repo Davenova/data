@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
         const updatedUser = await prisma.user.update({
             where: { telegramId },
-            data: { points: { increment: 1 } }
+            data: { points: { increment: 150 } }
         })
 
         return NextResponse.json({ success: true, points: updatedUser.points })
