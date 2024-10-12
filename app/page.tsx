@@ -20,12 +20,6 @@ export default function Home() {
   const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check')
   const [buttonStage2, setButtonStage2] = useState<'check' | 'claim' | 'claimed'>('check')
 
-  // State for loading spinner
-  const [isLoading, setIsLoading] = useState(false)
-
-  // New state for invite link
-  const [inviteLink, setInviteLink] = useState('')
-
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
         const tg = window.Telegram.WebApp;
@@ -102,6 +96,9 @@ export default function Home() {
     }
   }
 
+  // New loading spinner state
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleClaim1 = () => {
     if (buttonStage1 === 'claim') {
       setIsLoading(true); // Show loading state
@@ -120,11 +117,21 @@ export default function Home() {
     }
   }
 
-  // Generate invite link when Invite button is clicked
-  const handleInvite = () => {
-    if (user && user.telegramId) {
-      const uniqueInviteLink = `https://t.me/miniappw21bot/cdprojekt/start?startapp=${user.telegramId}`;
-      setInviteLink(uniqueInviteLink);
+  const handleInvite = async () => {
+    if (user) {
+      const inviteLink = `https://t.me/miniappw21bot/cdprojekt/start?startapp=${user.telegramId}`;
+      
+      // Open the invite link
+      window.open(inviteLink, '_blank');
+
+      // Send the user data to save in the database
+      await fetch('/api/save-invited-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ telegramId: user.telegramId }),
+      });
     }
   };
 
@@ -168,6 +175,9 @@ export default function Home() {
         </button>
       </div>
 
+      {/* Notification after claiming points */}
+      {notification && <div className="text-green-500 text-center">{notification}</div>}
+
       {/* Second Button for Twitter */}
       <div
         className={`py-2 px-4 rounded mt-4 ${
@@ -180,44 +190,30 @@ export default function Home() {
       >
         <button
           onClick={() => {
-            handleButtonClick2();
-            handleClaim2();
+            if (buttonStage2 === 'check') {
+              handleButtonClick2(); // Opens Twitter link
+            } else if (buttonStage2 === 'claim') {
+              handleClaim2(); // Triggers claim logic
+            }
           }}
-          disabled={buttonStage2 === 'claimed'}
+          disabled={buttonStage2 === 'claimed'} // Disable when claimed
           className={`w-full text-white font-bold py-2 rounded ${
             buttonStage2 === 'claimed' ? 'cursor-not-allowed' : ''
           }`}
         >
-          {buttonStage2 === 'check' && 'Check'}
-          {buttonStage2 === 'claim' && 'Claim'}
-          {buttonStage2 === 'claimed' && 'Claimed'}
+          {buttonStage2 === 'check' ? 'Check' : buttonStage2 === 'claim' ? 'Claim' : 'Claimed'}
         </button>
       </div>
 
-      {notification && (
-        <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
-          {notification}
-        </div>
-      )}
-
       {/* Invite Button */}
-      <div className="flex justify-center mt-6">
+      <div className="py-2 px-4 rounded mt-4 bg-blue-500 hover:bg-blue-700">
         <button
           onClick={handleInvite}
-          className="bg-blue-500 text-white py-2 px-4 rounded"
+          className="w-full text-white font-bold py-2 rounded"
         >
           Invite
         </button>
       </div>
-
-      {/* Display generated invite link */}
-      {inviteLink && (
-        <div className="text-center mt-4">
-          <p>
-            Your invite link: <a href={inviteLink} target="_blank" className="text-blue-500">{inviteLink}</a>
-          </p>
-        </div>
-      )}
     </div>
   )
 }
