@@ -21,7 +21,8 @@ model User {
 }
 
 model InvitedUser {
-  username      String
-  telegramId    String   @unique
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  username      String?
+  telegramId    Int      @unique
   createdAt     DateTime @default(now())
 }
