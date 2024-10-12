@@ -152,23 +152,21 @@ export default function Home() {
   if (!user) return <div className="container mx-auto p-4">Loading...</div>
 
   return (
-    
-    // In your return statement, add the section to display joined users
-    <div className="mt-4">
-      <h2 className="text-xl font-bold">Joined Users:</h2>
-      <ul>
-        {joinedUsers.map(user => (
-          <li key={user.telegramId}>@{user.username} joined</li>
-        ))}
-       </ul>
-    </div>
-
-    
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-center">Welcome, {user.firstName}!</h1>
       <div className="text-center mb-4">
         <p className="text-lg">Your current points: {user.points}</p>
       </div>
+
+      // In your return statement, add the section to display joined users
+<div className="mt-4">
+  <h2 className="text-xl font-bold">Joined Users:</h2>
+  <ul>
+    {joinedUsers.map(user => (
+      <li key={user.telegramId}>@{user.username} joined</li>
+    ))}
+  </ul>
+</div>
 
       {/* First Button for YouTube */}
       <div
