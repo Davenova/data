@@ -20,6 +20,12 @@ export default function Home() {
   const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check')
   const [buttonStage2, setButtonStage2] = useState<'check' | 'claim' | 'claimed'>('check')
 
+  // State for loading spinner
+  const [isLoading, setIsLoading] = useState(false)
+
+  // New state for invite link
+  const [inviteLink, setInviteLink] = useState('')
+
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
         const tg = window.Telegram.WebApp;
@@ -96,9 +102,6 @@ export default function Home() {
     }
   }
 
-  // New loading spinner state
-  const [isLoading, setIsLoading] = useState(false);
-
   const handleClaim1 = () => {
     if (buttonStage1 === 'claim') {
       setIsLoading(true); // Show loading state
@@ -116,6 +119,14 @@ export default function Home() {
       setButtonStage2('claimed');
     }
   }
+
+  // Generate invite link when Invite button is clicked
+  const handleInvite = () => {
+    if (user && user.telegramId) {
+      const uniqueInviteLink = `https://t.me/miniappw21bot/cdprojekt/start?startapp=${user.telegramId}`;
+      setInviteLink(uniqueInviteLink);
+    }
+  };
 
   if (error) {
     return <div className="container mx-auto p-4 text-red-500">{error}</div>
@@ -186,6 +197,25 @@ export default function Home() {
       {notification && (
         <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
           {notification}
+        </div>
+      )}
+
+      {/* Invite Button */}
+      <div className="flex justify-center mt-6">
+        <button
+          onClick={handleInvite}
+          className="bg-blue-500 text-white py-2 px-4 rounded"
+        >
+          Invite
+        </button>
+      </div>
+
+      {/* Display generated invite link */}
+      {inviteLink && (
+        <div className="text-center mt-4">
+          <p>
+            Your invite link: <a href={inviteLink} target="_blank" className="text-blue-500">{inviteLink}</a>
+          </p>
         </div>
       )}
     </div>
