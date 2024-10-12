@@ -1,71 +1,66 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { WebApp } from '@twa-dev/types'
+import { useEffect, useState } from 'react';
+import { WebApp } from '@twa-dev/types';
 
 declare global {
   interface Window {
     Telegram?: {
-      WebApp: WebApp
-    }
+      WebApp: WebApp;
+    };
   }
 }
 
 export default function Home() {
-  const [user, setUser] = useState<any>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [notification, setNotification] = useState('')
+  const [user, setUser] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [notification, setNotification] = useState('');
 
   // State for both buttons
-  const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check')
-  const [buttonStage2, setButtonStage2] = useState<'check' | 'claim' | 'claimed'>('check')
+  const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check');
+  const [buttonStage2, setButtonStage2] = useState<'check' | 'claim' | 'claimed'>('check');
 
-  // State for loading spinner
-  const [isLoading, setIsLoading] = useState(false)
-
-  // New state for invite link
-  const [inviteLink, setInviteLink] = useState('')
+  // New state for invite link copy notification
+  const [inviteNotification, setInviteNotification] = useState('');
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-        const tg = window.Telegram.WebApp;
-        tg.ready();
+      const tg = window.Telegram.WebApp;
+      tg.ready();
 
-        const initDataUnsafe = tg.initDataUnsafe || {};
+      const initDataUnsafe = tg.initDataUnsafe || {};
 
-        if (initDataUnsafe.user) {
-            fetch('/api/user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(initDataUnsafe.user),
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data.error) {
-                        setError(data.error);
-                    } else {
-                        setUser(data);
+      if (initDataUnsafe.user) {
+        fetch('/api/user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(initDataUnsafe.user),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              setError(data.error);
+            } else {
+              setUser(data);
 
-                        // Set the claimed button states based on user data
-                        setButtonStage1(data.claimedButton1 ? 'claimed' : 'check');
-                        setButtonStage2(data.claimedButton2 ? 'claimed' : 'check');
-                    }
-                })
-                .catch(() => {
-                    setError('Failed to fetch user data');
-                });
-        } else {
-            setError('No user data available');
-        }
+              // Set the claimed button states based on user data
+              setButtonStage1(data.claimedButton1 ? 'claimed' : 'check');
+              setButtonStage2(data.claimedButton2 ? 'claimed' : 'check');
+            }
+          })
+          .catch(() => {
+            setError('Failed to fetch user data');
+          });
+      } else {
+        setError('No user data available');
+      }
     } else {
-        setError('This app should be opened in Telegram');
+      setError('This app should be opened in Telegram');
     }
-}, []);
+  }, []);
 
   const handleIncreasePoints = async (pointsToAdd: number, buttonId: string) => {
-    if (!user) return
+    if (!user) return;
 
     try {
       const res = await fetch('/api/increase-points', {
@@ -74,33 +69,36 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ telegramId: user.telegramId, pointsToAdd, buttonId }), // Send buttonId along with telegramId and pointsToAdd
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (data.success) {
-        setUser({ ...user, points: data.points })
-        setNotification(`Points increased successfully! (+${pointsToAdd})`)
-        setTimeout(() => setNotification(''), 3000)
+        setUser({ ...user, points: data.points });
+        setNotification(`Points increased successfully! (+${pointsToAdd})`);
+        setTimeout(() => setNotification(''), 3000);
       } else {
-        setError('Failed to increase points')
+        setError('Failed to increase points');
       }
     } catch {
-      setError('An error occurred while increasing points')
+      setError('An error occurred while increasing points');
     }
-  }
+  };
 
   const handleButtonClick1 = () => {
     if (buttonStage1 === 'check') {
       window.open('https://youtu.be/xvFZjo5PgG0', '_blank');
       setButtonStage1('claim'); // Change to claim after opening the link
     }
-  }
+  };
 
   const handleButtonClick2 = () => {
     if (buttonStage2 === 'check') {
       window.open('https://twitter.com', '_blank');
       setButtonStage2('claim'); // Change to claim without opening link
     }
-  }
+  };
+
+  // New loading spinner state
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClaim1 = () => {
     if (buttonStage1 === 'claim') {
@@ -118,21 +116,22 @@ export default function Home() {
       handleIncreasePoints(3, 'button2'); // Add points by 1 for button 2
       setButtonStage2('claimed');
     }
-  }
+  };
 
-  // Generate invite link when Invite button is clicked
-  const handleInvite = () => {
-    if (user && user.telegramId) {
-      const uniqueInviteLink = `https://t.me/miniappw21bot/cdprojekt/start?startapp=${user.telegramId}`;
-      setInviteLink(uniqueInviteLink);
-    }
+  // Function to copy the invite link to the clipboard
+  const handleCopyInviteLink = () => {
+    const inviteLink = 'https://your-invite-link.com';
+    navigator.clipboard.writeText(inviteLink).then(() => {
+      setInviteNotification('Invite link copied to clipboard!');
+      setTimeout(() => setInviteNotification(''), 3000); // Clear the notification after 3 seconds
+    });
   };
 
   if (error) {
-    return <div className="container mx-auto p-4 text-red-500">{error}</div>
+    return <div className="container mx-auto p-4 text-red-500">{error}</div>;
   }
 
-  if (!user) return <div className="container mx-auto p-4">Loading...</div>
+  if (!user) return <div className="container mx-auto p-4">Loading...</div>;
 
   return (
     <div className="container mx-auto p-4">
@@ -194,30 +193,27 @@ export default function Home() {
         </button>
       </div>
 
+      {/* Invite Link Section */}
+      <div className="mt-8 text-center">
+        <p className="mb-4">Invite your friends using the link below:</p>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={handleCopyInviteLink}
+        >
+          Copy Invite Link
+        </button>
+        {inviteNotification && (
+          <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
+            {inviteNotification}
+          </div>
+        )}
+      </div>
+
       {notification && (
         <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
           {notification}
         </div>
       )}
-
-      {/* Invite Button */}
-      <div className="flex justify-center mt-6">
-        <button
-          onClick={handleInvite}
-          className="bg-blue-500 text-white py-2 px-4 rounded"
-        >
-          Invite
-        </button>
-      </div>
-
-      {/* Display generated invite link */}
-      {inviteLink && (
-        <div className="text-center mt-4">
-          <p>
-            Your invite link: <a href={inviteLink} target="_blank" className="text-blue-500">{inviteLink}</a>
-          </p>
-        </div>
-      )}
     </div>
-  )
+  );
 }
