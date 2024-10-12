@@ -23,6 +23,6 @@ model User {
 model InvitedUser {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   username      String?
-  telegramId    Int      @unique
+  telegramId    String   @unique
   createdAt     DateTime @default(now())
 }
