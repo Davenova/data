@@ -1,6 +1,6 @@
 // api/join.js
 
-import { connectToDatabase } from '../../lib/mongodb'; // Import your MongoDB connection utility
+import { prisma } from '@/lib/prisma' // Import your MongoDB connection utility
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
