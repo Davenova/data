@@ -11,75 +11,58 @@ declare global {
   }
 }
 
-type InvitedUser = {
-  id: string;
-  username: string;
-};
-
 export default function Home() {
   const [user, setUser] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [notification, setNotification] = useState('')
-  const [invitedUsers, setInvitedUsers] = useState<InvitedUser[]>([])
 
   // State for both buttons
   const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check')
   const [buttonStage2, setButtonStage2] = useState<'check' | 'claim' | 'claimed'>('check')
 
+  // State for loading spinner
+  const [isLoading, setIsLoading] = useState(false)
+
+  // New state for invite link
+  const [inviteLink, setInviteLink] = useState('')
+
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp
-      tg.ready()
+        const tg = window.Telegram.WebApp;
+        tg.ready();
 
-      const initDataUnsafe = tg.initDataUnsafe || {}
+        const initDataUnsafe = tg.initDataUnsafe || {};
 
-      if (initDataUnsafe.user) {
-        fetch('/api/user', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(initDataUnsafe.user),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) {
-              setError(data.error)
-            } else {
-              setUser(data)
+        if (initDataUnsafe.user) {
+            fetch('/api/user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(initDataUnsafe.user),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.error) {
+                        setError(data.error);
+                    } else {
+                        setUser(data);
 
-              // Set the claimed button states based on user data
-              setButtonStage1(data.claimedButton1 ? 'claimed' : 'check')
-              setButtonStage2(data.claimedButton2 ? 'claimed' : 'check')
-            }
-          })
-          .catch(() => {
-            setError('Failed to fetch user data')
-          })
-      } else {
-        setError('No user data available')
-      }
-    } else {
-      setError('This app should be opened in Telegram')
-    }
-  }, [])
-
-  // Fetch invited users when the component mounts
-  useEffect(() => {
-    const fetchInvitedUsers = async () => {
-      try {
-        const res = await fetch('/api/invite');
-        if (res.ok) {
-          const users = await res.json();
-          setInvitedUsers(users); // Set the fetched users
+                        // Set the claimed button states based on user data
+                        setButtonStage1(data.claimedButton1 ? 'claimed' : 'check');
+                        setButtonStage2(data.claimedButton2 ? 'claimed' : 'check');
+                    }
+                })
+                .catch(() => {
+                    setError('Failed to fetch user data');
+                });
+        } else {
+            setError('No user data available');
         }
-      } catch (error) {
-        console.error('Failed to fetch invited users:', error);
-      }
-    };
-
-    fetchInvitedUsers();
-  }, []);
+    } else {
+        setError('This app should be opened in Telegram');
+    }
+}, []);
 
   const handleIncreasePoints = async (pointsToAdd: number, buttonId: string) => {
     if (!user) return
@@ -90,7 +73,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ telegramId: user.telegramId, pointsToAdd, buttonId }),
+        body: JSON.stringify({ telegramId: user.telegramId, pointsToAdd, buttonId }), // Send buttonId along with telegramId and pointsToAdd
       })
       const data = await res.json()
       if (data.success) {
@@ -107,59 +90,43 @@ export default function Home() {
 
   const handleButtonClick1 = () => {
     if (buttonStage1 === 'check') {
-      window.open('https://youtu.be/xvFZjo5PgG0', '_blank')
-      setButtonStage1('claim')
+      window.open('https://youtu.be/xvFZjo5PgG0', '_blank');
+      setButtonStage1('claim'); // Change to claim after opening the link
     }
   }
 
   const handleButtonClick2 = () => {
     if (buttonStage2 === 'check') {
-      window.open('https://twitter.com', '_blank')
-      setButtonStage2('claim')
+      window.open('https://twitter.com', '_blank');
+      setButtonStage2('claim'); // Change to claim without opening link
     }
   }
-
-  // New loading spinner state
-  const [isLoading, setIsLoading] = useState(false)
 
   const handleClaim1 = () => {
     if (buttonStage1 === 'claim') {
-      setIsLoading(true)
-      handleIncreasePoints(5, 'button1')
+      setIsLoading(true); // Show loading state
+      handleIncreasePoints(5, 'button1'); // Immediately increase points by 2 for button 1
       setTimeout(() => {
-        setButtonStage1('claimed')
-        setIsLoading(false)
-      }, 3000)
+        setButtonStage1('claimed'); // After 3 seconds, change to 'claimed'
+        setIsLoading(false); // Stop loading after 3 seconds
+      }, 3000); // 3-second delay
     }
-  }
+  };
 
   const handleClaim2 = () => {
     if (buttonStage2 === 'claim') {
-      handleIncreasePoints(3, 'button2')
-      setButtonStage2('claimed')
+      handleIncreasePoints(3, 'button2'); // Add points by 1 for button 2
+      setButtonStage2('claimed');
     }
   }
 
-  const handleInviteClick = async () => {
-    if (user) {
-      const { telegramId, firstName } = user
-
-      const response = await fetch('/api/invite', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ telegramId, username: firstName }),
-      })
-
-      if (response.ok) {
-        // Refresh invited users
-        const users = await fetch('/api/invite')
-        const data = await users.json()
-        setInvitedUsers(data)
-      }
+  // Generate invite link when Invite button is clicked
+  const handleInvite = () => {
+    if (user && user.telegramId) {
+      const uniqueInviteLink = `https://t.me/miniappw21bot/cdprojekt/start?startapp=${user.telegramId}`;
+      setInviteLink(uniqueInviteLink);
     }
-  }
+  };
 
   if (error) {
     return <div className="container mx-auto p-4 text-red-500">{error}</div>
@@ -187,12 +154,12 @@ export default function Home() {
         <button
           onClick={() => {
             if (buttonStage1 === 'check') {
-              handleButtonClick1()
+              handleButtonClick1(); // Opens YouTube link
             } else if (buttonStage1 === 'claim') {
-              handleClaim1()
+              handleClaim1(); // Triggers claim logic
             }
           }}
-          disabled={buttonStage1 === 'claimed' || isLoading}
+          disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
           className={`w-full text-white font-bold py-2 rounded ${
             buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
           }`}
@@ -213,8 +180,8 @@ export default function Home() {
       >
         <button
           onClick={() => {
-            handleButtonClick2()
-            handleClaim2()
+            handleButtonClick2();
+            handleClaim2();
           }}
           disabled={buttonStage2 === 'claimed'}
           className={`w-full text-white font-bold py-2 rounded ${
@@ -227,24 +194,28 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Invite Button */}
-      <button onClick={handleInviteClick} className="mt-4 bg-blue-500 text-white py-2 px-4 rounded">
-        Invite
-      </button>
-
-      {/* Display invited users */}
-      <div className="mt-4">
-        <h2 className="text-xl font-bold">Invited Users:</h2>
-        <ul>
-          {invitedUsers.map((user) => (
-            <li key={user.id}>@{user.username} joined</li>
-          ))}
-        </ul>
-      </div>
-
       {notification && (
         <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
           {notification}
+        </div>
+      )}
+
+      {/* Invite Button */}
+      <div className="flex justify-center mt-6">
+        <button
+          onClick={handleInvite}
+          className="bg-blue-500 text-white py-2 px-4 rounded"
+        >
+          Invite
+        </button>
+      </div>
+
+      {/* Display generated invite link */}
+      {inviteLink && (
+        <div className="text-center mt-4">
+          <p>
+            Your invite link: <a href={inviteLink} target="_blank" className="text-blue-500">{inviteLink}</a>
+          </p>
         </div>
       )}
     </div>
