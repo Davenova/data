@@ -20,9 +20,9 @@ model User {
   updatedAt     DateTime @updatedAt
 }
 
-model JoinedUser {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  telegramId Int      @unique // Unique Telegram ID for each user
-  username  String?
-  joinedAt  DateTime @default(now()) // Timestamp for when the user joined
+model InvitedUser {
+  id            String   @id @default(cuid())
+  username      String
+  telegramId    String   @unique
+  createdAt     DateTime @default(now())
 }
