@@ -11,11 +11,16 @@ declare global {
   }
 }
 
+type InvitedUser = {
+  id: string;
+  username: string;
+};
+
 export default function Home() {
   const [user, setUser] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [notification, setNotification] = useState('')
-  const [invitedUsers, setInvitedUsers] = useState([])
+  const [invitedUsers, setInvitedUsers] = useState<InvitedUser[]>([])
 
   // State for both buttons
   const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check')
@@ -62,13 +67,19 @@ export default function Home() {
   // Fetch invited users when the component mounts
   useEffect(() => {
     const fetchInvitedUsers = async () => {
-      const res = await fetch('/api/invite')
-      const data = await res.json()
-      setInvitedUsers(data)
-    }
+      try {
+        const res = await fetch('/api/invite');
+        if (res.ok) {
+          const users = await res.json();
+          setInvitedUsers(users); // Set the fetched users
+        }
+      } catch (error) {
+        console.error('Failed to fetch invited users:', error);
+      }
+    };
 
-    fetchInvitedUsers()
-  }, [])
+    fetchInvitedUsers();
+  }, []);
 
   const handleIncreasePoints = async (pointsToAdd: number, buttonId: string) => {
     if (!user) return
