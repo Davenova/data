@@ -26,6 +26,9 @@ export default function Home() {
   // New state for invite link
   const [inviteLink, setInviteLink] = useState('')
 
+   // State to hold joined users
+  const [joinedUsers, setJoinedUsers] = useState<any[]>([])
+
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
         const tg = window.Telegram.WebApp;
@@ -62,6 +65,20 @@ export default function Home() {
     } else {
         setError('This app should be opened in Telegram');
     }
+
+    const fetchJoinedUsers = async () => {
+    try {
+      const response = await fetch('/api/joined-users'); // New endpoint to get joined users
+      const data = await response.json();
+      if (data.success) {
+        setJoinedUsers(data.users);
+      }
+    } catch (error) {
+      console.error('Failed to fetch joined users:', error);
+    }
+  };
+
+  fetchJoinedUsers();
 }, []);
 
   const handleIncreasePoints = async (pointsToAdd: number, buttonId: string) => {
@@ -135,6 +152,18 @@ export default function Home() {
   if (!user) return <div className="container mx-auto p-4">Loading...</div>
 
   return (
+    
+    // In your return statement, add the section to display joined users
+    <div className="mt-4">
+      <h2 className="text-xl font-bold">Joined Users:</h2>
+      <ul>
+        {joinedUsers.map(user => (
+          <li key={user.telegramId}>@{user.username} joined</li>
+        ))}
+       </ul>
+    </div>
+
+    
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-center">Welcome, {user.firstName}!</h1>
       <div className="text-center mb-4">
