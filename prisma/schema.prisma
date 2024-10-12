@@ -21,7 +21,6 @@ model User {
 }
 
 model InvitedUser {
-  id            String   @id @default(cuid())
   username      String
   telegramId    String   @unique
   createdAt     DateTime @default(now())
