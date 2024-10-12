@@ -20,6 +20,12 @@ export default function Home() {
   const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check')
   const [buttonStage2, setButtonStage2] = useState<'check' | 'claim' | 'claimed'>('check')
 
+  // State for loading spinner
+  const [isLoading, setIsLoading] = useState(false)
+
+  // New state for invite link
+  const [inviteLink, setInviteLink] = useState('')
+
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
         const tg = window.Telegram.WebApp;
@@ -96,9 +102,6 @@ export default function Home() {
     }
   }
 
-  // New loading spinner state
-  const [isLoading, setIsLoading] = useState(false);
-
   const handleClaim1 = () => {
     if (buttonStage1 === 'claim') {
       setIsLoading(true); // Show loading state
@@ -117,16 +120,13 @@ export default function Home() {
     }
   }
 
-  // Copy link functionality
-  const [copySuccess, setCopySuccess] = useState(false);
-  const inviteLink = "https://t.me/joinchat/abcdef"; // Replace with actual invite link
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(inviteLink).then(() => {
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000); // Reset after 2 seconds
-    });
-  }
+  // Generate invite link when Invite button is clicked
+  const handleInvite = () => {
+    if (user && user.telegramId) {
+      const uniqueInviteLink = `https://t.me/miniappw21bot/cdprojekt/start?startapp=${user.telegramId}`;
+      setInviteLink(uniqueInviteLink);
+    }
+  };
 
   if (error) {
     return <div className="container mx-auto p-4 text-red-500">{error}</div>
@@ -194,20 +194,28 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Invite link with Copy button */}
-      <div className="mt-4 flex items-center">
-        <p className="text-blue-500 mr-4">{inviteLink}</p>
-        <button
-          onClick={handleCopyLink}
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-        >
-          {copySuccess ? 'Copied!' : 'Copy'}
-        </button>
-      </div>
-
       {notification && (
         <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
           {notification}
+        </div>
+      )}
+
+      {/* Invite Button */}
+      <div className="flex justify-center mt-6">
+        <button
+          onClick={handleInvite}
+          className="bg-blue-500 text-white py-2 px-4 rounded"
+        >
+          Invite
+        </button>
+      </div>
+
+      {/* Display generated invite link */}
+      {inviteLink && (
+        <div className="text-center mt-4">
+          <p>
+            Your invite link: <a href={inviteLink} target="_blank" className="text-blue-500">{inviteLink}</a>
+          </p>
         </div>
       )}
     </div>
