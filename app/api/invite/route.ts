@@ -1,26 +1,31 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const { telegramId, username } = req.body;
+// POST handler for adding an invited user
+export async function POST(req: NextRequest) {
+  try {
+    const { telegramId, username } = await req.json();
 
-    try {
-      const newUser = await prisma.invitedUser.create({
-        data: {
-          telegramId,
-          username,
-        },
-      });
-      res.status(201).json(newUser);
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to save user' });
-    }
-  } else if (req.method === 'GET') {
+    // Create a new invited user in the database
+    const newUser = await prisma.invitedUser.create({
+      data: {
+        telegramId,
+        username,
+      },
+    });
+
+    return NextResponse.json(newUser, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to save user' }, { status: 500 });
+  }
+}
+
+// GET handler for retrieving all invited users
+export async function GET() {
+  try {
     const users = await prisma.invitedUser.findMany();
-    res.status(200).json(users);
-  } else {
-    res.setHeader('Allow', ['POST', 'GET']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    return NextResponse.json(users, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to retrieve users' }, { status: 500 });
   }
 }
