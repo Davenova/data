@@ -37,16 +37,18 @@ export async function POST(req: NextRequest) {
             }
         }
 
+        let inviterInfo = null
         if (inviterId) {
             const inviter = await prisma.user.findUnique({
-                where: { telegramId: inviterId }
+                where: { telegramId: inviterId },
+                select: { username: true, firstName: true, lastName: true }
             })
             if (inviter) {
-                user = { ...user, inviterId: inviterId }
+                inviterInfo = inviter
             }
         }
 
-        return NextResponse.json(user)
+        return NextResponse.json({ user, inviterInfo })
     } catch (error) {
         console.error('Error processing user data:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
