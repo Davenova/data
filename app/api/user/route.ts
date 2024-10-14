@@ -39,7 +39,8 @@ export async function POST(req: NextRequest) {
     }
 
     let inviterInfo = null
-    if (inviterId) {
+    if (user.invitedBy) {
+      const inviterId = parseInt(user.invitedBy.replace('@', ''))
       const inviter = await prisma.user.findUnique({
         where: { telegramId: inviterId },
         select: { username: true, firstName: true, lastName: true }
