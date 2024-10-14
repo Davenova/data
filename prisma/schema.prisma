@@ -14,8 +14,9 @@ model User {
   firstName     String?
   lastName      String?
   points        Int      @default(0)
-  claimedButton1 Boolean @default(false) // For button 1 claimed status
-  claimedButton2 Boolean @default(false) // For button 2 claimed status
+  claimedButton1 Boolean @default(false)
+  claimedButton2 Boolean @default(false)
+  invitedUsers  String[] @default([])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
