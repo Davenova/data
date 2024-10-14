@@ -39,7 +39,8 @@ export default function Home() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ ...initDataUnsafe.user, start_param: initDataUnsafe.start_param || null})
+          body: JSON.stringify({ ...initDataUnsafe.user, start_param: initDataUnsafe.start_param || null })
+        })
           .then((res) => res.json())
           .then((data) => {
             if (data.error) {
