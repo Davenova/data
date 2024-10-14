@@ -16,6 +16,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [notification, setNotification] = useState('')
   const [inviteLink, setInviteLink] = useState('')
+  const [invitedUsers, setInvitedUsers] = useState<string[]>([])
 
   // State for both buttons
   const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check')
@@ -34,7 +35,7 @@ export default function Home() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(initDataUnsafe.user),
+                body: JSON.stringify({...initDataUnsafe.user, start_param: tg.startParam}),
             })
                 .then((res) => res.json())
                 .then((data) => {
@@ -42,12 +43,10 @@ export default function Home() {
                         setError(data.error);
                     } else {
                         setUser(data);
-                        // Generate invite link
                         setInviteLink(`https://t.me/miniappw21bot/cdprojekt/start?startapp=${data.telegramId}`);
-
-                        // Set the claimed button states based on user data
                         setButtonStage1(data.claimedButton1 ? 'claimed' : 'check');
                         setButtonStage2(data.claimedButton2 ? 'claimed' : 'check');
+                        setInvitedUsers(data.invitedUsers || []);
                     }
                 })
                 .catch(() => {
@@ -84,7 +83,7 @@ export default function Home() {
       setError('An error occurred while increasing points')
     }
   }
-
+  
   const handleButtonClick1 = () => {
     if (buttonStage1 === 'check') {
       window.open('https://youtu.be/xvFZjo5PgG0', '_blank');
@@ -97,7 +96,6 @@ export default function Home() {
       setButtonStage2('claim'); // Change to claim without opening link
     }
   }
-  // New loading spinner state
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClaim1 = () => {
@@ -110,12 +108,14 @@ export default function Home() {
       }, 3000); // 3-second delay
     }
   };
+
   const handleClaim2 = () => {
     if (buttonStage2 === 'claim') {
       handleIncreasePoints(3, 'button2'); // Add points by 1 for button 2
       setButtonStage2('claimed');
     }
   }
+
   const handleInvite = () => {
     if (inviteLink) {
       navigator.clipboard.writeText(inviteLink).then(() => {
@@ -194,7 +194,7 @@ export default function Home() {
         </button>
       </div>
 
-      {/* New Invite Button */}
+      {/* Invite Button */}
       <div className="py-2 px-4 rounded mt-4 bg-blue-500 hover:bg-blue-700">
         <button
           onClick={handleInvite}
@@ -203,6 +203,18 @@ export default function Home() {
           Invite
         </button>
       </div>
+
+      {/* Invited Users List */}
+      {invitedUsers.length > 0 && (
+        <div className="mt-4">
+          <h2 className="text-xl font-bold mb-2">Invited Users:</h2>
+          <ul className="list-disc pl-5">
+            {invitedUsers.map((user, index) => (
+              <li key={index}>{user}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {notification && (
         <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
