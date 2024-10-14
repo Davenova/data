@@ -17,7 +17,7 @@ model User {
   claimedButton1 Boolean @default(false)
   claimedButton2 Boolean @default(false)
   invitedUsers  String[] @default([])
-  invitedBy      String? @default(null)
+  invitedBy      String? @default("")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
