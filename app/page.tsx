@@ -147,10 +147,11 @@ export default function Home() {
       </div>
 
       {inviterInfo && (
-        <div className="text-center mb-4">
-          <p>Invited by: {inviterInfo.username || `${inviterInfo.firstName} ${inviterInfo.lastName}`.trim()}</p>
-        </div>
-      )}
+  <div className="text-center mb-4">
+    <p>Invited by: {inviterInfo.username || `${inviterInfo.firstName} ${inviterInfo.lastName}`.trim()}</p>
+    <p>Invited by ID: {user.invitedBy}</p> // Display the "invited by" data
+  </div>
+)}
 
       {/* First Button for YouTube */}
       <div
