@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
               username: userData.username || '',
               firstName: userData.first_name || '',
               lastName: userData.last_name || '',
-              invitedBy: `@${inviterInfo.username || inviterInfo.id}`
+              invitedBy: `@${inviterInfo.username || inviterId}`
             }
           });
 
