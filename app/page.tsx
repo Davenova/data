@@ -146,12 +146,6 @@ export default function Home() {
         <p className="text-lg">Your current points: {user.points}</p>
       </div>
 
-      {inviterInfo && (
-  <div className="text-center mb-4">
-    <p>Invited by: {inviterInfo.username || `${inviterInfo.firstName} ${inviterInfo.lastName}`.trim()}</p>
-  </div>
-)}
-
 {/* Add a new section to display the invitedBy data */}
 {user.invitedBy && (
   <div className="text-center mb-4">
