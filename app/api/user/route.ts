@@ -13,6 +13,8 @@ export async function POST(req: NextRequest) {
             where: { telegramId: userData.id }
         })
 
+        const inviterId = userData.start_param ? parseInt(userData.start_param) : null
+
         if (!user) {
             user = await prisma.user.create({
                 data: {
@@ -20,9 +22,28 @@ export async function POST(req: NextRequest) {
                     username: userData.username || '',
                     firstName: userData.first_name || '',
                     lastName: userData.last_name || ''
-                    
                 }
             })
+
+            if (inviterId) {
+                await prisma.user.update({
+                    where: { telegramId: inviterId },
+                    data: {
+                        invitedUsers: {
+                            push: `@${userData.username || userData.id}`
+                        }
+                    }
+                })
+            }
+        }
+
+        if (inviterId) {
+            const inviter = await prisma.user.findUnique({
+                where: { telegramId: inviterId }
+            })
+            if (inviter) {
+                user = { ...user, inviterId: inviterId }
+            }
         }
 
         return NextResponse.json(user)
