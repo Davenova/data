@@ -15,6 +15,7 @@ export default function Home() {
   const [user, setUser] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [notification, setNotification] = useState('')
+  const [inviteLink, setInviteLink] = useState('')
 
   // State for both buttons
   const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check')
@@ -41,6 +42,8 @@ export default function Home() {
                         setError(data.error);
                     } else {
                         setUser(data);
+                        // Generate invite link
+                        setInviteLink(`https://t.me/miniappw21bot/cdprojekt/start?startapp=${data.telegramId}`);
 
                         // Set the claimed button states based on user data
                         setButtonStage1(data.claimedButton1 ? 'claimed' : 'check');
@@ -88,14 +91,12 @@ export default function Home() {
       setButtonStage1('claim'); // Change to claim after opening the link
     }
   }
-
   const handleButtonClick2 = () => {
     if (buttonStage2 === 'check') {
       window.open('https://twitter.com', '_blank');
       setButtonStage2('claim'); // Change to claim without opening link
     }
   }
-
   // New loading spinner state
   const [isLoading, setIsLoading] = useState(false);
 
@@ -109,31 +110,23 @@ export default function Home() {
       }, 3000); // 3-second delay
     }
   };
-
   const handleClaim2 = () => {
     if (buttonStage2 === 'claim') {
       handleIncreasePoints(3, 'button2'); // Add points by 1 for button 2
       setButtonStage2('claimed');
     }
   }
-
-  const handleInvite = async () => {
-    if (user) {
-      const inviteLink = `https://t.me/miniappw21bot/cdprojekt/start?startapp=${user.telegramId}`;
-      
-      // Open the invite link
-      window.open(inviteLink, '_blank');
-
-      // Send the user data to save in the database
-      await fetch('/api/save-invited-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ telegramId: user.telegramId }),
+  const handleInvite = () => {
+    if (inviteLink) {
+      navigator.clipboard.writeText(inviteLink).then(() => {
+        setNotification('Invite link copied to clipboard!');
+        setTimeout(() => setNotification(''), 3000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+        setNotification('Failed to copy invite link. Please try again.');
       });
     }
-  };
+  }
 
   if (error) {
     return <div className="container mx-auto p-4 text-red-500">{error}</div>
@@ -175,9 +168,6 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Notification after claiming points */}
-      {notification && <div className="text-green-500 text-center">{notification}</div>}
-
       {/* Second Button for Twitter */}
       <div
         className={`py-2 px-4 rounded mt-4 ${
@@ -190,22 +180,21 @@ export default function Home() {
       >
         <button
           onClick={() => {
-            if (buttonStage2 === 'check') {
-              handleButtonClick2(); // Opens Twitter link
-            } else if (buttonStage2 === 'claim') {
-              handleClaim2(); // Triggers claim logic
-            }
+            handleButtonClick2();
+            handleClaim2();
           }}
-          disabled={buttonStage2 === 'claimed'} // Disable when claimed
+          disabled={buttonStage2 === 'claimed'}
           className={`w-full text-white font-bold py-2 rounded ${
             buttonStage2 === 'claimed' ? 'cursor-not-allowed' : ''
           }`}
         >
-          {buttonStage2 === 'check' ? 'Check' : buttonStage2 === 'claim' ? 'Claim' : 'Claimed'}
+          {buttonStage2 === 'check' && 'Check'}
+          {buttonStage2 === 'claim' && 'Claim'}
+          {buttonStage2 === 'claimed' && 'Claimed'}
         </button>
       </div>
 
-      {/* Invite Button */}
+      {/* New Invite Button */}
       <div className="py-2 px-4 rounded mt-4 bg-blue-500 hover:bg-blue-700">
         <button
           onClick={handleInvite}
@@ -214,6 +203,12 @@ export default function Home() {
           Invite
         </button>
       </div>
+
+      {notification && (
+        <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
+          {notification}
+        </div>
+      )}
     </div>
   )
 }
