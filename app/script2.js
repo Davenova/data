@@ -1,56 +1,53 @@
-import { useEffect, useState } from 'react';
+$(document).ready(function() {
+  var counter = 0;
 
-export default function Home() {
-  const [loading, setLoading] = useState(true);
-  const [counter, setCounter] = useState(0);
-  const [percentage, setPercentage] = useState(0);
+  // Hide the loading animation and show the home page after 10 seconds
+  setTimeout(function() {
+    $('#loading-container').hide();
+    $('#home-container').show();
+  }, 5000);
 
-  useEffect(() => {
-    const loadingTimer = setTimeout(() => {
-      setLoading(false);
-    }, 5000);
+  // Start the changing images
+  setInterval(function() {
+    if(counter == 3) { 
+      counter = 0; 
+    }
 
-    const imageInterval = setInterval(() => {
-      setCounter((prev) => (prev === 3 ? 0 : prev + 1));
-    }, 3000);
+    changeImage(counter);
+    counter++;
+  }, 3000);
 
-    let num = 0;
-    const percentageInterval = setInterval(() => {
-      if (num <= 100) {
-        setPercentage(num);
-        num++;
-      } else {
-        clearInterval(percentageInterval);
+  // Set the percentage off
+  loading();
+
+  // Your existing JavaScript code here...
+});
+
+var images = [
+  'fa fa-gamepad',
+  'cool.png'
+];
+
+function changeImage(counter) {
+  if (images[counter].startsWith('fa')) {
+    $(".loader .image").html('<i class="' + images[counter] + '"></i>');
+  } else {
+    $(".loader .image").html('<img src="' + images[counter] + '" alt="Cat icon">');
+  }
+}
+
+function loading(){
+  var num = 0;
+
+  for(i=0; i<=100; i++) {
+    setTimeout(function() { 
+      $('.loader span').html(num+'%');
+
+      if(num == 100) {
+        // Remove the recursive call to prevent infinite loop
+        // loading();
       }
-    }, 50);
-
-    return () => {
-      clearTimeout(loadingTimer);
-      clearInterval(imageInterval);
-      clearInterval(percentageInterval);
-    };
-  }, []);
-
-  const images = ['fa fa-gamepad', '/cool.png'];
-
-  const changeImage = () => {
-    return images[counter].startsWith('fa')
-      ? <i className={images[counter]}></i>
-      : <img src={images[counter]} alt="Loading icon" />;
+      num++;
+    },i*50);
   };
-
-  return (
-    <div>
-      {loading ? (
-        <div className="loader">
-          <div className="image">{changeImage()}</div>
-          <span>{percentage}%</span>
-        </div>
-      ) : (
-        <div>
-          {/* Home content */}
-        </div>
-      )}
-    </div>
-  );
 }
