@@ -152,7 +152,7 @@ export default function Home() {
   </div>
 )}
 
-// Add a new section to display the invitedBy data
+{/* Add a new section to display the invitedBy data */}
 {user.invitedBy && (
   <div className="text-center mb-4">
     <p>Invited by: {user.invitedBy}</p>
