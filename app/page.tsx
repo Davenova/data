@@ -13,6 +13,7 @@ declare global {
 
 export default function Home() {
   const [user, setUser] = useState<any>(null)
+  const [inviterInfo, setInviterInfo] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [notification, setNotification] = useState('')
   const [inviteLink, setInviteLink] = useState('')
@@ -22,43 +23,47 @@ export default function Home() {
   const [buttonStage1, setButtonStage1] = useState<'check' | 'claim' | 'claimed'>('check')
   const [buttonStage2, setButtonStage2] = useState<'check' | 'claim' | 'claimed'>('check')
 
+  // New loading spinner state
+  const [isLoading, setIsLoading] = useState(false)
+
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-        const tg = window.Telegram.WebApp;
-        tg.ready();
+      const tg = window.Telegram.WebApp
+      tg.ready()
 
-        const initDataUnsafe = tg.initDataUnsafe || {};
+      const initDataUnsafe = tg.initDataUnsafe || {}
 
-        if (initDataUnsafe.user) {
-            fetch('/api/user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({...initDataUnsafe.user, start_param: tg.startParam}),
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data.error) {
-                        setError(data.error);
-                    } else {
-                        setUser(data);
-                        setInviteLink(`https://t.me/miniappw21bot/cdprojekt/start?startapp=${data.telegramId}`);
-                        setButtonStage1(data.claimedButton1 ? 'claimed' : 'check');
-                        setButtonStage2(data.claimedButton2 ? 'claimed' : 'check');
-                        setInvitedUsers(data.invitedUsers || []);
-                    }
-                })
-                .catch(() => {
-                    setError('Failed to fetch user data');
-                });
-        } else {
-            setError('No user data available');
-        }
+      if (initDataUnsafe.user) {
+        fetch('/api/user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ...initDataUnsafe.user, start_param: tg.startParam }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              setError(data.error)
+            } else {
+              setUser(data.user)
+              setInviterInfo(data.inviterInfo)
+              setInviteLink(`https://t.me/miniappw21bot/cdprojekt/start?startapp=${data.user.telegramId}`)
+              setButtonStage1(data.user.claimedButton1 ? 'claimed' : 'check')
+              setButtonStage2(data.user.claimedButton2 ? 'claimed' : 'check')
+              setInvitedUsers(data.user.invitedUsers || [])
+            }
+          })
+          .catch(() => {
+            setError('Failed to fetch user data')
+          })
+      } else {
+        setError('No user data available')
+      }
     } else {
-        setError('This app should be opened in Telegram');
+      setError('This app should be opened in Telegram')
     }
-}, []);
+  }, [])
 
   const handleIncreasePoints = async (pointsToAdd: number, buttonId: string) => {
     if (!user) return
@@ -69,7 +74,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ telegramId: user.telegramId, pointsToAdd, buttonId }), // Send buttonId along with telegramId and pointsToAdd
+        body: JSON.stringify({ telegramId: user.telegramId, pointsToAdd, buttonId }),
       })
       const data = await res.json()
       if (data.success) {
@@ -83,48 +88,48 @@ export default function Home() {
       setError('An error occurred while increasing points')
     }
   }
-  
+
   const handleButtonClick1 = () => {
     if (buttonStage1 === 'check') {
-      window.open('https://youtu.be/xvFZjo5PgG0', '_blank');
-      setButtonStage1('claim'); // Change to claim after opening the link
+      window.open('https://youtu.be/xvFZjo5PgG0', '_blank')
+      setButtonStage1('claim')
     }
   }
+
   const handleButtonClick2 = () => {
     if (buttonStage2 === 'check') {
-      window.open('https://twitter.com', '_blank');
-      setButtonStage2('claim'); // Change to claim without opening link
+      window.open('https://twitter.com', '_blank')
+      setButtonStage2('claim')
     }
   }
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleClaim1 = () => {
     if (buttonStage1 === 'claim') {
-      setIsLoading(true); // Show loading state
-      handleIncreasePoints(5, 'button1'); // Immediately increase points by 2 for button 1
+      setIsLoading(true)
+      handleIncreasePoints(5, 'button1')
       setTimeout(() => {
-        setButtonStage1('claimed'); // After 3 seconds, change to 'claimed'
-        setIsLoading(false); // Stop loading after 3 seconds
-      }, 3000); // 3-second delay
+        setButtonStage1('claimed')
+        setIsLoading(false)
+      }, 3000)
     }
-  };
+  }
 
   const handleClaim2 = () => {
     if (buttonStage2 === 'claim') {
-      handleIncreasePoints(3, 'button2'); // Add points by 1 for button 2
-      setButtonStage2('claimed');
+      handleIncreasePoints(3, 'button2')
+      setButtonStage2('claimed')
     }
   }
 
   const handleInvite = () => {
     if (inviteLink) {
       navigator.clipboard.writeText(inviteLink).then(() => {
-        setNotification('Invite link copied to clipboard!');
-        setTimeout(() => setNotification(''), 3000);
+        setNotification('Invite link copied to clipboard!')
+        setTimeout(() => setNotification(''), 3000)
       }).catch(err => {
-        console.error('Failed to copy: ', err);
-        setNotification('Failed to copy invite link. Please try again.');
-      });
+        console.error('Failed to copy: ', err)
+        setNotification('Failed to copy invite link. Please try again.')
+      })
     }
   }
 
@@ -141,6 +146,12 @@ export default function Home() {
         <p className="text-lg">Your current points: {user.points}</p>
       </div>
 
+      {inviterInfo && (
+        <div className="text-center mb-4">
+          <p>Invited by: {inviterInfo.username || `${inviterInfo.firstName} ${inviterInfo.lastName}`.trim()}</p>
+        </div>
+      )}
+
       {/* First Button for YouTube */}
       <div
         className={`py-2 px-4 rounded mt-4 ${
@@ -154,12 +165,12 @@ export default function Home() {
         <button
           onClick={() => {
             if (buttonStage1 === 'check') {
-              handleButtonClick1(); // Opens YouTube link
+              handleButtonClick1()
             } else if (buttonStage1 === 'claim') {
-              handleClaim1(); // Triggers claim logic
+              handleClaim1()
             }
           }}
-          disabled={buttonStage1 === 'claimed' || isLoading} // Disable when claimed or loading
+          disabled={buttonStage1 === 'claimed' || isLoading}
           className={`w-full text-white font-bold py-2 rounded ${
             buttonStage1 === 'claimed' || isLoading ? 'cursor-not-allowed' : ''
           }`}
@@ -180,8 +191,8 @@ export default function Home() {
       >
         <button
           onClick={() => {
-            handleButtonClick2();
-            handleClaim2();
+            handleButtonClick2()
+            handleClaim2()
           }}
           disabled={buttonStage2 === 'claimed'}
           className={`w-full text-white font-bold py-2 rounded ${
